@@ -58,7 +58,7 @@ extern "C" {
 #include <sys\sysTypes.h>
 
 /*- Definitions ------------------------------------------------------------*/
-#define NWK_FRAME_MAX_PAYLOAD_SIZE   127
+#define NWK_FRAME_MAX_PAYLOAD_SIZE   127 // this impacts on phy.c file, see  phyRxBuffer[]
 
 /*- Types ------------------------------------------------------------------*/
 COMPILER_PACK_SET(1)
@@ -87,8 +87,8 @@ typedef struct  NwkFrameHeader_t { // Size: 176 bits
 } NwkFrameHeader_t;
 
 typedef struct  NwkFrameBeaconHeader_t { // Size: 184 bits
-	uint16_t macFcf;
-	uint8_t macSeq;
+	uint8_t macFcf; // Frame Control Field:  changed size to LL standart
+//	uint8_t macSeq; // Sequence Number: should only be avaible when Security is Enabled
 	uint16_t macSrcPanId;
 	uint16_t macSrcAddr;
 	struct
