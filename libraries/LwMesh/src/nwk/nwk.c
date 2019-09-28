@@ -72,7 +72,7 @@ NwkIb_t nwkIb;
 void NWK_Init(void)
 {
 	nwkIb.nwkSeqNum = 0;
-	nwkIb.macSeqNum = 0; // Sequence Number: only present when Security Enabled = 1
+	nwkIb.macSeqNum = 0;
 	nwkIb.addr = 0;
 	nwkIb.lock = 0;
 
