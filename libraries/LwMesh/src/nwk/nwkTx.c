@@ -115,8 +115,9 @@ void nwkTxBeaconFrame(NwkFrame_t *frame)
 	frame->tx.status = NWK_SUCCESS_STATUS;
 	frame->tx.timeout = 0;
 
-	beacon->macFcf = 0x8000;
-	beacon->macSeq = ++nwkIb.macSeqNum;
+// changed size and bits to LL standart
+	beacon->macFcf = 0x88 // 100 0 1 0 00 (LLDN, Security Enabled, Frame Version, ACK Request, Sub Frame Type)
+	// beacon->macSeq = ++nwkIb.macSeqNum; // Sequence Number: only present when Security Enabled = 1
 	beacon->macSrcPanId = nwkIb.panId;
 	beacon->macSrcAddr = nwkIb.addr;
 }
