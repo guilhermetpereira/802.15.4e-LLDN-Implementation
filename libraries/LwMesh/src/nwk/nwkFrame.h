@@ -43,7 +43,7 @@
 /*
  * Copyright (c) 2014-2015 Atmel Corporation. All rights reserved.
  *
- * Licensed under Atmel's Limited License Agreement --> EULA.txt
+ * Licensed under Atmel's Limited Lic	ense Agreement --> EULA.txt
  */
 
 #ifndef _NWK_FRAME_H_
@@ -62,7 +62,7 @@ extern "C" {
 
 /*- Types ------------------------------------------------------------------*/
 COMPILER_PACK_SET(1)
-typedef struct  NwkFrameHeader_t {
+typedef struct  NwkFrameHeader_t { // Size: 176 bits
 	uint16_t macFcf;
 	uint8_t macSeq;
 	uint16_t macDstPanId;
@@ -86,7 +86,7 @@ typedef struct  NwkFrameHeader_t {
 	};
 } NwkFrameHeader_t;
 
-typedef struct  NwkFrameBeaconHeader_t {
+typedef struct  NwkFrameBeaconHeader_t { // Size: 184 bits
 	uint16_t macFcf;
 	uint8_t macSeq;
 	uint16_t macSrcPanId;
@@ -117,9 +117,9 @@ typedef struct NwkFrame_t {
 	uint8_t size;
 
 	union {
-		NwkFrameHeader_t header;
-		NwkFrameBeaconHeader_t beacon;
-		uint8_t data[NWK_FRAME_MAX_PAYLOAD_SIZE];
+		NwkFrameHeader_t header; // Size: 176 bits
+		NwkFrameBeaconHeader_t beacon; // Size: 184 bits
+		uint8_t data[NWK_FRAME_MAX_PAYLOAD_SIZE]; // Size: (8 * NWK_FRAME_MAX_PAYLOAD_SIZE) bits
 	};
 
 	uint8_t *payload;

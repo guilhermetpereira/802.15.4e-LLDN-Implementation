@@ -83,7 +83,7 @@ static void nwkTxAckWaitTimerHandler(SYS_Timer_t *timer);
 static void nwkTxDelayTimerHandler(SYS_Timer_t *timer);
 
 /*- Variables --------------------------------------------------------------*/
-static NwkFrame_t *nwkTxPhyActiveFrame;
+static NwkFrame_t *nwkTxPhyActiveFrame; // Current frame being sent
 static SYS_Timer_t nwkTxAckWaitTimer;
 static SYS_Timer_t nwkTxDelayTimer;
 
@@ -111,7 +111,7 @@ void nwkTxBeaconFrame(NwkFrame_t *frame)
 {
 	NwkFrameBeaconHeader_t *beacon = &frame->beacon;
 
-	frame->state = NWK_TX_STATE_SEND;
+	frame->state = NWK_TX_STATE_SEND; // First state of nwkTxTaskHandler
 	frame->tx.status = NWK_SUCCESS_STATUS;
 	frame->tx.timeout = 0;
 
@@ -295,7 +295,7 @@ static uint8_t nwkTxConvertPhyStatus(uint8_t status)
 
 /*************************************************************************//**
 *****************************************************************************/
-void PHY_DataConf(uint8_t status)
+void PHY_DataConf(uint8_t status) // this function is called in PHY_TaskHandler when frame is sent
 {
 	nwkTxPhyActiveFrame->tx.status = nwkTxConvertPhyStatus(status);
 	nwkTxPhyActiveFrame->state = NWK_TX_STATE_SENT;
@@ -310,7 +310,7 @@ void nwkTxTaskHandler(void)
 {
 	NwkFrame_t *frame = NULL;
 
-	while (NULL != (frame = nwkFrameNext(frame))) {
+	while (NULL != (frame = nwkFrameNext(frame))) { // gets next frame (if frame == NULL return first)
 		switch (frame->state) {
 #ifdef NWK_ENABLE_SECURITY
 		case NWK_TX_STATE_ENCRYPT:
@@ -331,12 +331,12 @@ void nwkTxTaskHandler(void)
 		}
 		break;
 
-		case NWK_TX_STATE_SEND:
+		case NWK_TX_STATE_SEND: // First State
 		{
-			if (NULL == nwkTxPhyActiveFrame) {
-				nwkTxPhyActiveFrame = frame;
+			if (NULL == nwkTxPhyActiveFrame) { // if no other frame is being sent
+				nwkTxPhyActiveFrame = frame; // set this to be sent
 				frame->state = NWK_TX_STATE_WAIT_CONF;
-				PHY_DataReq(frame->data, frame->size);
+				PHY_DataReq(frame->data, frame->size); // It's up to PHY_TaskHandler to send frame
 				nwkIb.lock++;
 			}
 		}
@@ -350,13 +350,13 @@ void nwkTxTaskHandler(void)
 			if (NWK_SUCCESS_STATUS == frame->tx.status) {
 				if (frame->header.nwkSrcAddr == nwkIb.addr &&
 						frame->header.nwkFcf.
-						ackRequest) {
+						ackRequest) { // if NWK_OPT_ACK_REQUEST is enabled start timer to wait
 					frame->state = NWK_TX_STATE_WAIT_ACK;
 					frame->tx.timeout = NWK_ACK_WAIT_TIME /
 							NWK_TX_ACK_WAIT_TIMER_INTERVAL
 							+ 1;
 					SYS_TimerStart(&nwkTxAckWaitTimer);
-				} else {
+				} else { // if NWK_OPT_ACK_REQUEST is not enabled change state
 					frame->state = NWK_TX_STATE_CONFIRM;
 				}
 			} else {
@@ -373,10 +373,10 @@ void nwkTxTaskHandler(void)
 #ifdef NWK_ENABLE_ROUTING
 			nwkRouteFrameSent(frame);
 #endif
-			if (NULL == frame->tx.confirm) {
-				nwkFrameFree(frame);
+			if (NULL == frame->tx.confirm) { // no beacon have confirm
+				nwkFrameFree(frame); // if no callback free frame from buffer
 			} else {
-				frame->tx.confirm(frame);
+				frame->tx.confirm(frame); // callback to when massage is sent
 			}
 		}
 		break;

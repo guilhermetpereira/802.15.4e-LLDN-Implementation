@@ -61,7 +61,7 @@ enum {
 };
 
 /*- Variables --------------------------------------------------------------*/
-static NwkFrame_t nwkFrameFrames[NWK_BUFFERS_AMOUNT];
+static NwkFrame_t nwkFrameFrames[NWK_BUFFERS_AMOUNT]; // array of Frames in buffer
 
 /*- Implementations --------------------------------------------------------*/
 
@@ -81,17 +81,17 @@ void nwkFrameInit(void)
 *****************************************************************************/
 NwkFrame_t *nwkFrameAlloc(void)
 {
-	for (uint8_t i = 0; i < NWK_BUFFERS_AMOUNT; i++) {
-		if (NWK_FRAME_STATE_FREE == nwkFrameFrames[i].state) {
-			memset(&nwkFrameFrames[i], 0, sizeof(NwkFrame_t));
-			nwkFrameFrames[i].size = sizeof(NwkFrameHeader_t);
-			nwkFrameFrames[i].payload = nwkFrameFrames[i].data +
-					sizeof(NwkFrameHeader_t);
+	for (uint8_t i = 0; i < NWK_BUFFERS_AMOUNT; i++) {   // Iterates trough all frames in buffer
+		if (NWK_FRAME_STATE_FREE == nwkFrameFrames[i].state) { 	// if frame is free, alocate it
+			memset(&nwkFrameFrames[i], 0, sizeof(NwkFrame_t)); // clean previous frame setting and data
+			nwkFrameFrames[i].size = sizeof(NwkFrameHeader_t); // This is overwrited afterwards |Size: 176 bits
+			nwkFrameFrames[i].payload = nwkFrameFrames[i].data + //  Important: data + sizef(NwkFrameHeader_t) = sizeof(NwkFrameBeaconHeader_t)
+					sizeof(NwkFrameHeader_t); 	//This is overwrited afterwards
 			nwkIb.lock++;
 			return &nwkFrameFrames[i];
 		}
 	}
-	return NULL;
+	return NULL; // if no buffer frame is avaible return null
 }
 
 /*************************************************************************//**

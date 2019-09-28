@@ -69,7 +69,7 @@ enum {
 static void nwkDataReqTxConf(NwkFrame_t *frame);
 
 /*- Variables --------------------------------------------------------------*/
-static NWK_DataReq_t *nwkDataReqQueue;
+static NWK_DataReq_t *nwkDataReqQueue; // list of frames to be sent to buffer
 
 /*- Implementations --------------------------------------------------------*/
 
@@ -111,35 +111,35 @@ static void nwkDataReqSendFrame(NWK_DataReq_t *req)
 {
 	NwkFrame_t *frame;
 
-	if (NULL == (frame = nwkFrameAlloc())) {
+	if (NULL == (frame = nwkFrameAlloc())) { // allocates empty frame from buffer pool
 		req->state = NWK_DATA_REQ_STATE_CONFIRM;
 		req->status = NWK_OUT_OF_MEMORY_STATUS;
 		return;
 	}
 
 	req->frame = frame;
-	req->state = NWK_DATA_REQ_STATE_WAIT_CONF;
+	req->state = NWK_DATA_REQ_STATE_WAIT_CONF; // wait for nwkTxTaskHandler to process frame
 
-	frame->tx.confirm = nwkDataReqTxConf;
+	frame->tx.confirm = nwkDataReqTxConf; // confirm handler (free used frame from buffer)
 
-	if(req->options & NWK_OPT_BEACON)
+	if(req->options & NWK_OPT_BEACON) // set frame as beacon frame
 	{
 		frame->tx.control = 0;
-		
+		/* Setting up Beacon Frame variables */
 		frame->beacon.macSFS.beaconOrder = BI_COEF;
 		frame->beacon.macSFS.superframeOrder = SD_COEF;
 		frame->beacon.macSFS.finalCAPslot = FINAL_CAP_SLOT;
 		frame->beacon.macSFS.BatteryLifeExtension = TDMA_BATTERY_EXTENSION;
 		frame->beacon.macSFS.PANCoordinator = 1;
 		frame->beacon.macSFS.AssociationPermit = 0;
-		
+
 		frame->beacon.macGTS = 0;
 		frame->beacon.macPending = 0;
 
-		memcpy(frame->payload, req->data, req->size);
+		memcpy(frame->payload, req->data, req->size); // load data to payload in frame
 		frame->size += req->size;
 
-		nwkTxBeaconFrame(frame);
+		nwkTxBeaconFrame(frame); // Set up more fields and changes frame states
 	}
 	else
 	{
@@ -164,7 +164,7 @@ static void nwkDataReqSendFrame(NWK_DataReq_t *req)
 			mcHeader->maxMemberRadius = req->memberRadius;
 			mcHeader->nonMemberRadius = req->nonMemberRadius;
 			mcHeader->maxNonMemberRadius = req->nonMemberRadius;
-	
+
 			frame->payload += sizeof(NwkFrameMulticastHeader_t);
 			frame->size += sizeof(NwkFrameMulticastHeader_t);
 		}
@@ -175,10 +175,10 @@ static void nwkDataReqSendFrame(NWK_DataReq_t *req)
 		frame->header.nwkDstAddr = req->dstAddr;
 		frame->header.nwkSrcEndpoint = req->srcEndpoint;
 		frame->header.nwkDstEndpoint = req->dstEndpoint;
-	
+
 		memcpy(frame->payload, req->data, req->size);
 		frame->size += req->size;
-	
+
 		nwkTxFrame(frame);
 	}
 }
@@ -187,7 +187,7 @@ static void nwkDataReqSendFrame(NWK_DataReq_t *req)
 *  @brief Frame transmission confirmation handler
 *  @param[in] frame Pointer to the sent frame
 *****************************************************************************/
-static void nwkDataReqTxConf(NwkFrame_t *frame)
+static void nwkDataReqTxConf(NwkFrame_t *frame) // This function is called after message is sent
 {
 	for (NWK_DataReq_t *req = nwkDataReqQueue; req; req = req->next) {
 		if (req->frame == frame) {
@@ -238,7 +238,8 @@ void nwkDataReqTaskHandler(void)
 			return;
 		}
 		break;
-
+		// wait for nwkTxTaskHandler
+		// nwkDataReqTxConf function changes state
 		case NWK_DATA_REQ_STATE_WAIT_CONF:
 			break;
 
