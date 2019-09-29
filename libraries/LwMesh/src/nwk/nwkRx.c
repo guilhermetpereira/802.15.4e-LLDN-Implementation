@@ -123,21 +123,23 @@ void __attribute__((weak)) PHY_DataInd(PHY_DataInd_t *ind)
 {
 	NwkFrame_t *frame;
 
-	if(0x88 == ind->data[1])
+	if(0x88 == ind->data[1]) // if message received has a NwkFrameHeader_t
 	{
+		// if message received isn't broadcast and direct or frame size doesn't fit header
 		if((0x61 != ind->data[0] && 0x41 != ind->data[0]) || ind->size < sizeof(NwkFrameHeader_t))
 		{
 			return;
 		}
 	}
-	else if(0x80 == ind->data[1])
+	else if(0x80 == ind->data[1]) // if message received has a NwkFrameBeaconHeader_t
 	{
-		if((0x00 != ind->data[0]) || ind->size < (sizeof(NwkFrameBeaconHeader_t)))
-		{
+		// if message received isn't structered (see 802.15.4) as should or frame size doesn't fit header
+		if((0x00 != ind->data[0]) || ind->size < (sizeof(NwkFrameBeaconHeader_t))) // as LL-Beacon Frame is smaller this if
+		{																																					 // wouldn't work
 			return;
 		}
 	}
-	else
+	else // if message received isn't NwkFrameHeader_t or NwkFrameBeaconHeader_t
 	{
 		return;
 	}
@@ -145,7 +147,8 @@ void __attribute__((weak)) PHY_DataInd(PHY_DataInd_t *ind)
 	if (NULL == (frame = nwkFrameAlloc())) {
 		return;
 	}
-
+	// if message is a NwkFrameHeader_t: state = NWK_RX_STATE_RECEIVED
+	// if message is a NWK_RX_STATE_BEACON: state = NWK_RX_STATE_BEACON
 	frame->state = ((0x88 == ind->data[1]) ? NWK_RX_STATE_RECEIVED : NWK_RX_STATE_BEACON);
 
 	frame->size = ind->size;

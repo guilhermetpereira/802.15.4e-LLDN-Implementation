@@ -109,15 +109,16 @@ void nwkTxInit(void)
 *****************************************************************************/
 void nwkTxBeaconFrame(NwkFrame_t *frame)
 {
-	NwkFrameBeaconHeader_t *beacon = &frame->beacon;
+	// when frame->data is used latter this is what it referes
+	NwkFrameBeaconHeader_t *beacon = &frame->beacon; // occupies data memory space,
 
 	frame->state = NWK_TX_STATE_SEND; // First state of nwkTxTaskHandler
 	frame->tx.status = NWK_SUCCESS_STATUS;
 	frame->tx.timeout = 0;
 
 // changed size and bits to LL standart
-	beacon->macFcf = 0x88 // 100 0 1 0 00 (LLDN, Security Enabled, Frame Version, ACK Request, Sub Frame Type)
-	// beacon->macSeq = ++nwkIb.macSeqNum; // Sequence Number: only present when Security Enabled = 1
+	beacon->macFcf = 0x8000 // 100 0 1 0 00 (LLDN, Security Enabled, Frame Version, ACK Request, Sub Frame Type)
+	beacon->macSeq = ++nwkIb.macSeqNum; // Sequence Number: only present when Security Enabled = 1
 	beacon->macSrcPanId = nwkIb.panId;
 	beacon->macSrcAddr = nwkIb.addr;
 }
