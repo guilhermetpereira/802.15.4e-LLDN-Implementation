@@ -485,7 +485,7 @@ static bool nwkRxIndicateDataFrame(NwkFrame_t *frame)
 	ind.options	|= (header->nwkSrcAddr == header->macSrcAddr) ? NWK_IND_OPT_LOCAL : 0;
 	ind.options	|= (NWK_BROADCAST_PANID == header->macDstPanId) ? NWK_IND_OPT_BROADCAST_PAN_ID : 0;
 
-	return nwkIb.endpoint[header->nwkDstEndpoint](&ind);
+	return nwkIb.endpoint[header->nwkDstEndpoint](&ind); // call endpoint handler
 }
 
 /*************************************************************************//**
@@ -512,7 +512,7 @@ static bool nwkRxIndicateBeaconFrame(NwkFrame_t *frame)
 
 	ind.options	= NWK_IND_OPT_BEACON;
 
-	return nwkIb.endpoint[header->nwkDstEndpoint](&ind);
+	return nwkIb.endpoint[header->nwkDstEndpoint](&ind); // call endpoint handler
 }
 
 /*************************************************************************//**
