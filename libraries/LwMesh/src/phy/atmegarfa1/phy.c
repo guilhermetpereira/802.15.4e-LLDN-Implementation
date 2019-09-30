@@ -216,7 +216,7 @@ void PHY_SetPanId(uint16_t panId)
   uint8_t *d = (uint8_t *)&panId;
 
   PAN_ID_0_REG = d[0];
-  PAN_ID_1_REG = d[1];
+  // PAN_ID_1_REG = d[1];
 }
 
 /*************************************************************************//**

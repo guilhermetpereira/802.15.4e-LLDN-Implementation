@@ -87,25 +87,29 @@ typedef struct  NwkFrameHeader_t { // Size: 176 bits
 } NwkFrameHeader_t;
 
 typedef struct  NwkFrameBeaconHeader_t { // Size: 184 bits
-	uint16_t macFcf; // Frame Control Field:  changed size to LL standart
-	uint8_t macSeq; // Sequence Number: should only be avaible when Security is Enabled
+	uint8_t macFcf; // Frame Control Field:  changed size to LL standart
+
+	uint8_t macFlags;
 
 	/* Present in 802.15.4-2015 Beacon Frame Format */
-	uint16_t macSrcPanId;
-	uint16_t macSrcAddr;
+	uint8_t macSrcPanId;
+	// uint8_t macSrcAddr;
 
-	struct
-	{
-		uint16_t beaconOrder			: 4;
-		uint16_t superframeOrder		: 4;
-		uint16_t finalCAPslot			: 4;
-		uint16_t BatteryLifeExtension	: 1;
-		uint16_t Reserved				: 1;
-		uint16_t PANCoordinator			: 1;
-		uint16_t AssociationPermit		: 1;
-	} macSFS;
-	uint8_t macGTS;
-	uint8_t macPending;
+	uint8_t macSeq; // Sequence Number: should only be avaible when Security is Enabled
+	uint8_t macTimeSlot;
+	//
+	// struct
+	// {
+	// 	uint16_t beaconOrder			: 4;
+	// 	uint16_t superframeOrder		: 4;
+	// 	uint16_t finalCAPslot			: 4;
+	// 	uint16_t BatteryLifeExtension	: 1;
+	// 	uint16_t Reserved				: 1;
+	// 	uint16_t PANCoordinator			: 1;
+	// 	uint16_t AssociationPermit		: 1;
+	// } macSFS;
+	// uint8_t macGTS;
+	// uint8_t macPending;
 } NwkFrameBeaconHeader_t;
 
 typedef struct  NwkFrameMulticastHeader_t {

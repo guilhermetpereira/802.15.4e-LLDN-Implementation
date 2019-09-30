@@ -4,6 +4,7 @@ extern "C" {
 
 ///*- Includes ---------------------------------------------------------------*/
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include "config.h"
 #include "hal.h"
@@ -49,28 +50,31 @@ static void appDataConf(NWK_DataReq_t *req)
 
 static void tmrSendDataHandler(SYS_Timer_t *timer)
 {
+//  uint8_t *data;
+//  data[0] = 'a';
   NWK_DataReq(&msgReq);
-  Serial.write("\nMESSAGE SENT");
+  unsigned char c = (unsigned char)msgReq.data[0];
+  Serial.write("\nMESSAGE SENT ");
+  Serial.write(c);
 //  Serial.write(message);
 }
 
 static void appInit(void)
 {
   Serial.begin(115200);
-  
 //  // Set Network Parameters
-  NWK_SetAddr(APP_PANID);        // Endereco desse nodo visto pela Rede
+//  NWK_SetAddr(APP_PANID);        // Endereco desse nodo visto pela Rede
   NWK_SetPanId(APP_PANID);       // Endereco do coordenador visto pela rede 
   PHY_SetChannel(0x1a); 
-  PHY_SetRxState(true);
+  PHY_SetRxState(false);
   
   // Set Up Data Message Frame
-  msgReq.dstAddr      = 0xFFFF;
-  msgReq.dstEndpoint  = APP_DATA_ENDPOINT;
-  msgReq.srcEndpoint  = APP_DATA_ENDPOINT;
-  msgReq.options      = 0; // NWK_OPT_ACK_REQUEST; 
-  msgReq.data         = &message;
-  msgReq.size         = sizeof(message);
+//  msgReq.dstAddr      = 0xFFFF;
+//  msgReq.dstEndpoint  = APP_DATA_ENDPOINT;
+//  msgReq.srcEndpoint  = APP_DATA_ENDPOINT;
+  msgReq.options      = NWK_OPT_BEACON; // NWK_OPT_ACK_REQUEST; 
+//  msgReq.data         = &message;
+//  msgReq.size         = sizeof(message);
   // msgReq.confirm      = appDataConf; // function called after ACK CONFIRM
 
   // Set up Timer

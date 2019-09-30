@@ -343,7 +343,7 @@ static void nwkRxHandleReceivedFrame(NwkFrame_t *frame)
 
 	if (NWK_BROADCAST_PANID == header->macDstPanId)
 	{
-		if (nwkIb.addr == header->nwkDstAddr || NWK_BROADCAST_ADDR == header->nwkDstAddr)
+		if (nwkIb.addr == header->nwkDstAddr || NWK_BROADCAST_ADDR == header->nwkDstAddr) // here it checks if message is for this node
 		{
     #ifdef NWK_ENABLE_SECURITY
 			if (header->nwkFcf.security)
@@ -436,7 +436,7 @@ static void nwkRxHandleReceivedFrame(NwkFrame_t *frame)
 				header->nwkDstAddr &&
 				0 == header->nwkFcf.linkLocal) {
 			nwkTxBroadcastFrame(frame);
-		}
+		} // resend frame furthermore
 
 		if (nwkIb.addr == header->nwkDstAddr || NWK_BROADCAST_ADDR ==
 				header->nwkDstAddr) {
@@ -458,6 +458,7 @@ static void nwkRxHandleReceivedFrame(NwkFrame_t *frame)
 
 /*************************************************************************//**
 *****************************************************************************/
+
 static bool nwkRxIndicateDataFrame(NwkFrame_t *frame)
 {
 	NwkFrameHeader_t *header = &frame->header;
@@ -501,8 +502,8 @@ static bool nwkRxIndicateBeaconFrame(NwkFrame_t *frame)
 	return false;
 	}
 
-	ind.srcAddr = frame->beacon.macSrcAddr;
-	ind.dstAddr = frame->beacon.macSrcAddr;
+	ind.srcAddr = frame->beacon.macSrcPanId;
+	ind.dstAddr = frame->beacon.macSrcPanId;
 	ind.srcEndpoint = 0;
 	ind.dstEndpoint = 0;
 	ind.data = frame->payload;

@@ -71,8 +71,8 @@ enum {
 };
 
 typedef struct NWK_DataInd_t {
-	uint16_t srcAddr;
-	uint16_t dstAddr;
+	uint8_t srcAddr;
+	uint8_t dstAddr;
 	uint8_t srcEndpoint;
 	uint8_t dstEndpoint;
 	uint8_t options;

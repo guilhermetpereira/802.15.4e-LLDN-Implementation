@@ -106,7 +106,7 @@ void NWK_Init(void)
 *  @brief Sets network address of the node
 *  @param[in] addr Adddress to set
 *****************************************************************************/
-void NWK_SetAddr(uint16_t addr)
+void NWK_SetAddr(uint8_t addr)
 {
 	nwkIb.addr = addr;
 	PHY_SetShortAddr(addr);
@@ -116,7 +116,7 @@ void NWK_SetAddr(uint16_t addr)
 *  @brief Sets network identifier (PAN) of the node
 *  @param[in] panId PAN ID to set
 *****************************************************************************/
-void NWK_SetPanId(uint16_t panId)
+void NWK_SetPanId(uint8_t panId)
 {
 	nwkIb.panId = panId;
 	PHY_SetPanId(panId);
