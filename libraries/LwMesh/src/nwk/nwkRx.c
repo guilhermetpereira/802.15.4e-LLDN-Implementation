@@ -558,7 +558,7 @@ void nwkRxTaskHandler(void)
 
 	while (NULL != (frame = nwkFrameNext(frame))) {
 		switch (frame->state) {
-		case NWK_RX_STATE_RECEIVED:
+		case NWK_RX_STATE_RECEIVED: // enabled by PHY_DataInd()
 		{
 			nwkRxHandleReceivedFrame(frame);
 		}

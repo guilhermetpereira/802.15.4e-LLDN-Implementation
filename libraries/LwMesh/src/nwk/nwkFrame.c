@@ -85,8 +85,8 @@ NwkFrame_t *nwkFrameAlloc(void)
 		if (NWK_FRAME_STATE_FREE == nwkFrameFrames[i].state) { 	// if frame is free, alocate it
 			memset(&nwkFrameFrames[i], 0, sizeof(NwkFrame_t)); // clean previous frame setting and data
 			nwkFrameFrames[i].size = sizeof(NwkFrameHeader_t);
-			nwkFrameFrames[i].payload = nwkFrameFrames[i].data + //  Important: data + sizef(NwkFrameHeader_t) = sizeof(NwkFrameBeaconHeader_t)
-					sizeof(NwkFrameHeader_t); 	//This is overwrited afterwards
+			nwkFrameFrames[i].payload = nwkFrameFrames[i].data + // this is offsetting payload pointer to start of actual payload
+					sizeof(NwkFrameHeader_t);
 			nwkIb.lock++;
 			return &nwkFrameFrames[i];
 		}

@@ -86,7 +86,7 @@ typedef struct  NwkFrameHeader_t { // Size: 176 bits
 	};
 } NwkFrameHeader_t;
 
-typedef struct  NwkFrameBeaconHeader_t { // Size: 168 bits
+typedef struct  NwkFrameBeaconHeader_t { // Size: 184 bits
 	uint16_t macFcf; // Frame Control Field:  changed size to LL standart
 	uint8_t macSeq; // Sequence Number: should only be avaible when Security is Enabled
 
