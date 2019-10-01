@@ -237,7 +237,7 @@ void nwkDataReqTaskHandler(void)
 {
 	for (NWK_DataReq_t *req = nwkDataReqQueue; req; req = req->next) {
 		switch (req->state) {
-		case NWK_DATA_REQ_STATE_INITIAL:
+			case NWK_DATA_REQ_STATE_INITIAL:
 		{
 			req->data[0] = 'A';
 			nwkDataReqSendFrame(req);

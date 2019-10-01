@@ -18,7 +18,7 @@ extern "C" {
 
 /* Definitions */
 #define APP_ADDR    0x8001
-#define APP_PANID   0x0001
+#define APP_PANID   0x001
 #define APP_CHANNEL 0x0F
 
 #define APP_DATA_ENDPOINT 1
