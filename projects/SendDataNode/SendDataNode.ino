@@ -17,7 +17,7 @@ extern "C" {
 
 /* Definitions */
 #define APP_ADDR    0x8001
-#define APP_PANID   0x0001
+#define APP_PANID   0x0002
 #define APP_CHANNEL 0x0F
 
 #define APP_DATA_ENDPOINT 1
@@ -50,7 +50,7 @@ static void appDataConf(NWK_DataReq_t *req)
 static void tmrSendDataHandler(SYS_Timer_t *timer)
 {
   NWK_DataReq(&msgReq);
-  Serial.write("\nMESSAGE SENT");
+//  Serial.write("\nMESSAGE SENT");
 //  Serial.write(message);
 }
 
@@ -65,13 +65,13 @@ static void appInit(void)
   PHY_SetRxState(true);
   
   // Set Up Data Message Frame
-  msgReq.dstAddr      = APP_ADDR;
+  msgReq.dstAddr      = 0xFFFF;
   msgReq.dstEndpoint  = APP_DATA_ENDPOINT;
   msgReq.srcEndpoint  = APP_DATA_ENDPOINT;
-  msgReq.options      = 0; // NWK_OPT_ACK_REQUEST; 
+  msgReq.options      = NWK_OPT_ACK_REQUEST; 
   msgReq.data         = &message;
   msgReq.size         = sizeof(message);
-  // msgReq.confirm      = appDataConf; // function called after ACK CONFIRM
+   msgReq.confirm      = appDataConf; // function called after ACK CONFIRM
 
 
   // Set up Timer

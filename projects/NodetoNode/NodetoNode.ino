@@ -15,7 +15,7 @@ extern "C" {
 
 /* Definitions */
 #define APP_ADDR    0x8001
-#define APP_PANID   0x0001
+#define APP_PANID   0x0002
 #define APP_CHANNEL 0x0F
 
 #define APP_DATA_ENDPOINT 1
@@ -33,24 +33,16 @@ typedef enum AppState_t
 
 /* Variables Declaration */
 static AppState_t appstate = APP_STATE_INITIAL;
-//static SYS_Timer_t tmrOpenEndPoint; ( Usado Para Debugar )
 
 /* Functions Declaration */
 //
 bool rx_frame(NWK_DataInd_t *ind)
 {
-  if(beacon->state == '') app_state = 
-  if(
   Serial.write("\nMENSAGEM = ");
   char rec_data = (char)*(ind->data);
-  Serial.println(rec_data);
+  Serial.print(rec_data);
   return true;
 }
-//static void tmrOpenEndPointHandler(SYS_Timer_t *timer)
-//{
-//  NWK_OpenEndpoint(1, rx_frame);
-//  Serial.write("END POINT ABERTO");
-//}
 static void appInit(void)
 {
   Serial.begin(115200);
@@ -60,12 +52,6 @@ static void appInit(void)
   NWK_SetPanId(APP_PANID);      // Endereco do coordenador visto pela rede
   PHY_SetChannel(0x1a); 
   PHY_SetRxState(true);
-  
-  // Set up Timer ( Usado para Debugar ) 
-//  tmrOpenEndPoint.interval = 10000;
-//  tmrOpenEndPoint.mode = SYS_TIMER_INTERVAL_MODE;
-//  tmrOpenEndPoint.handler = tmrOpenEndPointHandler;
-//  SYS_TimerStart(&tmrOpenEndPoint);     
 
   NWK_OpenEndpoint(1, rx_frame); 
 }
