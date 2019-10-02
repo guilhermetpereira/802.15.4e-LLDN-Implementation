@@ -125,14 +125,14 @@ static void nwkDataReqSendFrame(NWK_DataReq_t *req)
 	if(req->options & NWK_OPT_BEACON)
 	{
 		frame->tx.control = 0;
-		
+
 		frame->beacon.macSFS.beaconOrder = BI_COEF;
 		frame->beacon.macSFS.superframeOrder = SD_COEF;
 		frame->beacon.macSFS.finalCAPslot = FINAL_CAP_SLOT;
 		frame->beacon.macSFS.BatteryLifeExtension = TDMA_BATTERY_EXTENSION;
 		frame->beacon.macSFS.PANCoordinator = 1;
 		frame->beacon.macSFS.AssociationPermit = 0;
-		
+
 		frame->beacon.macGTS = 0;
 		frame->beacon.macPending = 0;
 
@@ -164,7 +164,7 @@ static void nwkDataReqSendFrame(NWK_DataReq_t *req)
 			mcHeader->maxMemberRadius = req->memberRadius;
 			mcHeader->nonMemberRadius = req->nonMemberRadius;
 			mcHeader->maxNonMemberRadius = req->nonMemberRadius;
-	
+
 			frame->payload += sizeof(NwkFrameMulticastHeader_t);
 			frame->size += sizeof(NwkFrameMulticastHeader_t);
 		}
@@ -175,11 +175,11 @@ static void nwkDataReqSendFrame(NWK_DataReq_t *req)
 		frame->header.nwkDstAddr = req->dstAddr;
 		frame->header.nwkSrcEndpoint = req->srcEndpoint;
 		frame->header.nwkDstEndpoint = req->dstEndpoint;
-	
+
 		memcpy(frame->payload, req->data, req->size);
 		frame->size += req->size;
-	
-		nwkTxFrame(frame);
+
+				nwkTxFrame(frame);
 	}
 }
 
@@ -239,7 +239,7 @@ void nwkDataReqTaskHandler(void)
 		}
 		break;
 
-		case NWK_DATA_REQ_STATE_WAIT_CONF:
+		case NWK_DATA_REQ_STATE_WAIT_CONF: // wait for nwkTx.c to change state
 			break;
 
 		case NWK_DATA_REQ_STATE_CONFIRM:

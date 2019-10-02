@@ -43,7 +43,7 @@
 /*
  * Copyright (c) 2014-2015 Atmel Corporation. All rights reserved.
  *
- * Licensed under Atmel's Limited License Agreement --> EULA.txt
+ * Licensed under Atmel's Limited Lic	ense Agreement --> EULA.txt
  */
 
 #ifndef _NWK_FRAME_H_
@@ -58,16 +58,16 @@ extern "C" {
 #include <sys\sysTypes.h>
 
 /*- Definitions ------------------------------------------------------------*/
-#define NWK_FRAME_MAX_PAYLOAD_SIZE   127
+#define NWK_FRAME_MAX_PAYLOAD_SIZE   127 // this impacts on phy.c file, see  phyRxBuffer[]
 
 /*- Types ------------------------------------------------------------------*/
 COMPILER_PACK_SET(1)
-typedef struct  NwkFrameHeader_t {
+typedef struct  NwkFrameHeader_t { // Size: 176 bits
 	uint16_t macFcf;
 	uint8_t macSeq;
 	uint16_t macDstPanId;
 	uint16_t macDstAddr;
-	uint16_t macSrcAddr;
+	uint16_t macSrcAddr; // Used for routing
 
 	struct {
 		uint8_t ackRequest : 1;
@@ -86,11 +86,18 @@ typedef struct  NwkFrameHeader_t {
 	};
 } NwkFrameHeader_t;
 
-typedef struct  NwkFrameBeaconHeader_t {
-	uint16_t macFcf;
-	uint8_t macSeq;
-	uint16_t macSrcPanId;
-	uint16_t macSrcAddr;
+typedef struct  NwkFrameBeaconHeader_t { // Size: 184 bits
+	uint8_t macFcf; // Frame Control Field:  changed size to LL standart
+	uint8_t macSeq; // Sequence Number: should only be avaible when Security is Enabled
+
+	// uint8_t macFlags;
+
+	/* Present in 802.15.4-2015 Beacon Frame Format */
+	uint8_t macSrcPanId;
+	uint8_t macSrcAddr;
+
+	// uint8_t macTimeSlot;
+
 	struct
 	{
 		uint16_t beaconOrder			: 4;
@@ -119,7 +126,7 @@ typedef struct NwkFrame_t {
 	union {
 		NwkFrameHeader_t header;
 		NwkFrameBeaconHeader_t beacon;
-		uint8_t data[NWK_FRAME_MAX_PAYLOAD_SIZE];
+		uint8_t data[NWK_FRAME_MAX_PAYLOAD_SIZE]; // Size: (8 * NWK_FRAME_MAX_PAYLOAD_SIZE) bits
 	};
 
 	uint8_t *payload;

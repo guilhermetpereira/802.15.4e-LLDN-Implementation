@@ -276,7 +276,7 @@ void PHY_DataReq(uint8_t *data, uint8_t size)
 
   IRQ_STATUS_REG = IRQ_CLEAR_VALUE;
 
-  TRX_FRAME_BUFFER(0) = size + PHY_CRC_SIZE;
+  TRX_FRAME_BUFFER(0) = size + PHY_CRC_SIZE; // macro to acess frame buffer
   for (uint8_t i = 0; i < size; i++)
     TRX_FRAME_BUFFER(i+1) = data[i];
 
@@ -410,14 +410,14 @@ void PHY_TaskHandler(void)
   if (IRQ_STATUS_REG_s.rxEnd)
   {
     PHY_DataInd_t ind;
-    uint8_t size = TST_RX_LENGTH_REG;
+    uint8_t size = TST_RX_LENGTH_REG; // Length of receveid frame
 
-    for (uint8_t i = 0; i < size + 1/*lqi*/; i++)
-      phyRxBuffer[i] = TRX_FRAME_BUFFER(i);
+    for (uint8_t i = 0; i < size + 1/*lqi is stored in extra last byte*/; i++)
+      phyRxBuffer[i] = TRX_FRAME_BUFFER(i); // frame in buffer
 
-    ind.data = phyRxBuffer;
+    ind.data = phyRxBuffer; //stores full Frame, including payload and MAC header
     ind.size = size - PHY_CRC_SIZE;
-    ind.lqi  = phyRxBuffer[size];
+    ind.lqi  = phyRxBuffer[size]; // lqi is in last byte, as written above
     ind.rssi = (int8_t)PHY_ED_LEVEL_REG + PHY_RSSI_BASE_VAL;
     PHY_DataInd(&ind);
 

@@ -1,6 +1,6 @@
 /**
  * \file nwkFrame.c
- *
+ * TESTE DO GIT
  * \brief Frame buffers management implementation
  *
  * Copyright (C) 2014-2015 Atmel Corporation. All rights reserved.
@@ -61,7 +61,7 @@ enum {
 };
 
 /*- Variables --------------------------------------------------------------*/
-static NwkFrame_t nwkFrameFrames[NWK_BUFFERS_AMOUNT];
+static NwkFrame_t nwkFrameFrames[NWK_BUFFERS_AMOUNT]; // array of Frames in buffer
 
 /*- Implementations --------------------------------------------------------*/
 
@@ -81,17 +81,17 @@ void nwkFrameInit(void)
 *****************************************************************************/
 NwkFrame_t *nwkFrameAlloc(void)
 {
-	for (uint8_t i = 0; i < NWK_BUFFERS_AMOUNT; i++) {
-		if (NWK_FRAME_STATE_FREE == nwkFrameFrames[i].state) {
-			memset(&nwkFrameFrames[i], 0, sizeof(NwkFrame_t));
+	for (uint8_t i = 0; i < NWK_BUFFERS_AMOUNT; i++) {   // Iterates trough all frames in buffer
+		if (NWK_FRAME_STATE_FREE == nwkFrameFrames[i].state) { 	// if frame is free, alocate it
+			memset(&nwkFrameFrames[i], 0, sizeof(NwkFrame_t)); // clean previous frame setting and data
 			nwkFrameFrames[i].size = sizeof(NwkFrameHeader_t);
-			nwkFrameFrames[i].payload = nwkFrameFrames[i].data +
+			nwkFrameFrames[i].payload = nwkFrameFrames[i].data + // this is offsetting payload pointer to start of actual payload
 					sizeof(NwkFrameHeader_t);
 			nwkIb.lock++;
 			return &nwkFrameFrames[i];
 		}
 	}
-	return NULL;
+	return NULL; // if no buffer frame is avaible return null
 }
 
 /*************************************************************************//**

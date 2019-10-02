@@ -65,13 +65,14 @@ static void appInit(void)
   PHY_SetRxState(true);
   
   // Set Up Data Message Frame
-  msgReq.dstAddr      = 0xFFFF;
+  msgReq.dstAddr      = APP_ADDR;
   msgReq.dstEndpoint  = APP_DATA_ENDPOINT;
   msgReq.srcEndpoint  = APP_DATA_ENDPOINT;
   msgReq.options      = 0; // NWK_OPT_ACK_REQUEST; 
   msgReq.data         = &message;
   msgReq.size         = sizeof(message);
   // msgReq.confirm      = appDataConf; // function called after ACK CONFIRM
+
 
   // Set up Timer
   tmrSendData.interval = 5000;
