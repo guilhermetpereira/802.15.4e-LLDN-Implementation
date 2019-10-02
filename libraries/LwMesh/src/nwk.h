@@ -90,8 +90,8 @@ typedef enum {
 } NWK_Status_t;
 
 typedef struct NwkIb_t {
-	uint8_t addr;
-	uint8_t panId;
+	uint16_t addr;
+	uint16_t panId;
 	uint8_t nwkSeqNum;
 	uint8_t macSeqNum;
 	bool(*endpoint[NWK_ENDPOINTS_AMOUNT]) (NWK_DataInd_t * ind);
@@ -106,8 +106,8 @@ extern NwkIb_t nwkIb;
 
 /*- Prototypes -------------------------------------------------------------*/
 void NWK_Init(void);
-void NWK_SetAddr(uint8_t addr);
-void NWK_SetPanId(uint8_t panId);
+void NWK_SetAddr(uint16_t addr);
+void NWK_SetPanId(uint16_t panId);
 void NWK_OpenEndpoint(uint8_t id, bool (*handler)(NWK_DataInd_t *ind));
 bool NWK_Busy(void);
 void NWK_Lock(void);

@@ -325,8 +325,8 @@ static void nwkRxHandleReceivedFrame(NwkFrame_t *frame)
 	frame->state = NWK_RX_STATE_FINISH;
 
 #ifndef NWK_ENABLE_SECURITY
-	if (header->nwkFcf.security) {
-		return;
+	if (header->nwkFcf.security) { // if security isn't enabled but Frame Control says it is
+		return;											 // doesn't process message any further
 	}
 #endif
 
@@ -335,13 +335,13 @@ static void nwkRxHandleReceivedFrame(NwkFrame_t *frame)
 		return;
 	}
 
-#else
-	if (header->nwkFcf.multicast) {
+#else // if multicast isn't enabled but Frame Control says it is
+	if (header->nwkFcf.multicast) { // doesn't process message any further
 		return;
 	}
 #endif
 
-	if (NWK_BROADCAST_PANID == header->macDstPanId)
+	if (NWK_BROADCAST_PANID == header->macDstPanId) // when macDstPanId set to BROADCAST all nodes must hear it
 	{
 		if (nwkIb.addr == header->nwkDstAddr || NWK_BROADCAST_ADDR == header->nwkDstAddr) // here it checks if message is for this node
 		{
@@ -436,10 +436,10 @@ static void nwkRxHandleReceivedFrame(NwkFrame_t *frame)
 				header->nwkDstAddr &&
 				0 == header->nwkFcf.linkLocal) {
 			nwkTxBroadcastFrame(frame);
-		} // resend frame furthermore
+		} // resend frame
 
 		if (nwkIb.addr == header->nwkDstAddr || NWK_BROADCAST_ADDR ==
-				header->nwkDstAddr) {
+				header->nwkDstAddr) { // checks if message was ment to this frame
     #ifdef NWK_ENABLE_SECURITY
 			if (header->nwkFcf.security) {
 				frame->state = NWK_RX_STATE_DECRYPT;
@@ -523,10 +523,11 @@ static void nwkRxHandleIndication(NwkFrame_t *frame)
 	bool ack;
 
 	nwkRxAckControl = 0;
-	ack = nwkRxIndicateDataFrame(frame);
-
+	ack = nwkRxIndicateDataFrame(frame); 	// this functions calls EndPoint callback
+																				// ack only is sent if in callback frame
+																				// is processed correctly
 	if (0 == frame->header.nwkFcf.ackRequest) {
-		ack = false;
+		ack = false;	// if message received doesn't require ack set it as false
 	}
 
 	if (NWK_BROADCAST_ADDR == frame->header.macDstAddr &&

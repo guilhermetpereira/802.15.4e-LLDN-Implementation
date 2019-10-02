@@ -157,12 +157,12 @@ void nwkTxFrame(NwkFrame_t *frame)
 	header->macSrcAddr = nwkIb.addr;
 	header->macSeq = ++nwkIb.macSeqNum;
 
-	if (NWK_BROADCAST_ADDR == header->macDstAddr) {
+	if (NWK_BROADCAST_ADDR == header->macDstAddr) { // if message is a broadcast
 		header->macFcf = 0x8841;
-		frame->tx.timeout = (rand() & NWK_TX_DELAY_JITTER_MASK) + 1;
+		frame->tx.timeout = (rand() & NWK_TX_DELAY_JITTER_MASK) + 1; // set a random timer to start afterwards
 	} else {
 		header->macFcf = 0x8861;
-		frame->tx.timeout = 0;
+		frame->tx.timeout = 0; // if it isn't a timer timer is set to zero
 	}
 }
 
@@ -322,7 +322,7 @@ void nwkTxTaskHandler(void)
 		break;
 #endif
 
-		case NWK_TX_STATE_DELAY:
+		case NWK_TX_STATE_DELAY: // first State
 		{
 			if (frame->tx.timeout > 0) {
 				frame->state = NWK_TX_STATE_WAIT_DELAY;
@@ -333,7 +333,7 @@ void nwkTxTaskHandler(void)
 		}
 		break;
 
-		case NWK_TX_STATE_SEND: // First State
+		case NWK_TX_STATE_SEND: // Second State
 		{
 			if (NULL == nwkTxPhyActiveFrame) { // if no other frame is being sent
 				nwkTxPhyActiveFrame = frame; // set this to be sent
@@ -344,7 +344,7 @@ void nwkTxTaskHandler(void)
 		}
 		break;
 
-		case NWK_TX_STATE_WAIT_CONF:
+		case NWK_TX_STATE_WAIT_CONF: // waits for phy layer confirmation
 			break;
 
 		case NWK_TX_STATE_SENT:
