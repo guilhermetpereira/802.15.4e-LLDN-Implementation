@@ -123,23 +123,21 @@ void __attribute__((weak)) PHY_DataInd(PHY_DataInd_t *ind)
 {
 	NwkFrame_t *frame;
 
-	if(0x88 == ind->data[1]) // if message received has a NwkFrameHeader_t
+	if(0x88 == ind->data[1])
 	{
-		// if message received isn't broadcast and direct or frame size doesn't fit header
 		if((0x61 != ind->data[0] && 0x41 != ind->data[0]) || ind->size < sizeof(NwkFrameHeader_t))
 		{
 			return;
 		}
 	}
-	else if(0x80 == ind->data[1]) // if message received has a NwkFrameBeaconHeader_t
+	else if(0x80 == ind->data[1])
 	{
-		// if message received isn't structered (see 802.15.4) as should or frame size doesn't fit header
-		if((0x00 != ind->data[0]) || ind->size < (sizeof(NwkFrameBeaconHeader_t))) // as LL-Beacon Frame is smaller this if
-		{																																					 // wouldn't work
+		if((0x00 != ind->data[0]) || ind->size < (sizeof(NwkFrameBeaconHeader_t)))
+		{
 			return;
 		}
 	}
-	else // if message received isn't NwkFrameHeader_t or NwkFrameBeaconHeader_t
+	else
 	{
 		return;
 	}
@@ -147,8 +145,7 @@ void __attribute__((weak)) PHY_DataInd(PHY_DataInd_t *ind)
 	if (NULL == (frame = nwkFrameAlloc())) {
 		return;
 	}
-	// if message is a NwkFrameHeader_t: state = NWK_RX_STATE_RECEIVED
-	// if message is a NWK_RX_STATE_BEACON: state = NWK_RX_STATE_BEACON
+
 	frame->state = ((0x88 == ind->data[1]) ? NWK_RX_STATE_RECEIVED : NWK_RX_STATE_BEACON);
 
 	frame->size = ind->size;
@@ -325,8 +322,8 @@ static void nwkRxHandleReceivedFrame(NwkFrame_t *frame)
 	frame->state = NWK_RX_STATE_FINISH;
 
 #ifndef NWK_ENABLE_SECURITY
-	if (header->nwkFcf.security) { // if security isn't enabled but Frame Control says it is
-		return;											 // doesn't process message any further
+	if (header->nwkFcf.security) {
+		return;
 	}
 #endif
 
@@ -335,15 +332,15 @@ static void nwkRxHandleReceivedFrame(NwkFrame_t *frame)
 		return;
 	}
 
-#else // if multicast isn't enabled but Frame Control says it is
-	if (header->nwkFcf.multicast) { // doesn't process message any further
+#else
+	if (header->nwkFcf.multicast) {
 		return;
 	}
 #endif
 
-	if (NWK_BROADCAST_PANID == header->macDstPanId) // when macDstPanId set to BROADCAST all nodes must hear it
+	if (NWK_BROADCAST_PANID == header->macDstPanId)
 	{
-		if (nwkIb.addr == header->nwkDstAddr || NWK_BROADCAST_ADDR == header->nwkDstAddr) // here it checks if message is for this node
+		if (nwkIb.addr == header->nwkDstAddr || NWK_BROADCAST_ADDR == header->nwkDstAddr)
 		{
     #ifdef NWK_ENABLE_SECURITY
 			if (header->nwkFcf.security)
@@ -436,10 +433,10 @@ static void nwkRxHandleReceivedFrame(NwkFrame_t *frame)
 				header->nwkDstAddr &&
 				0 == header->nwkFcf.linkLocal) {
 			nwkTxBroadcastFrame(frame);
-		} // resend frame
+		}
 
 		if (nwkIb.addr == header->nwkDstAddr || NWK_BROADCAST_ADDR ==
-				header->nwkDstAddr) { // checks if message was ment to this frame
+				header->nwkDstAddr) {
     #ifdef NWK_ENABLE_SECURITY
 			if (header->nwkFcf.security) {
 				frame->state = NWK_RX_STATE_DECRYPT;
@@ -458,7 +455,6 @@ static void nwkRxHandleReceivedFrame(NwkFrame_t *frame)
 
 /*************************************************************************//**
 *****************************************************************************/
-
 static bool nwkRxIndicateDataFrame(NwkFrame_t *frame)
 {
 	NwkFrameHeader_t *header = &frame->header;
@@ -486,7 +482,7 @@ static bool nwkRxIndicateDataFrame(NwkFrame_t *frame)
 	ind.options	|= (header->nwkSrcAddr == header->macSrcAddr) ? NWK_IND_OPT_LOCAL : 0;
 	ind.options	|= (NWK_BROADCAST_PANID == header->macDstPanId) ? NWK_IND_OPT_BROADCAST_PAN_ID : 0;
 
-	return nwkIb.endpoint[header->nwkDstEndpoint](&ind); // call endpoint handler
+	return nwkIb.endpoint[header->nwkDstEndpoint](&ind);
 }
 
 /*************************************************************************//**
@@ -502,8 +498,8 @@ static bool nwkRxIndicateBeaconFrame(NwkFrame_t *frame)
 	return false;
 	}
 
-	ind.srcAddr = frame->beacon.macSrcPanId;
-	ind.dstAddr = frame->beacon.macSrcPanId;
+	ind.srcAddr = frame->beacon.macSrcAddr;
+	ind.dstAddr = frame->beacon.macSrcAddr;
 	ind.srcEndpoint = 0;
 	ind.dstEndpoint = 0;
 	ind.data = frame->payload;
@@ -513,7 +509,7 @@ static bool nwkRxIndicateBeaconFrame(NwkFrame_t *frame)
 
 	ind.options	= NWK_IND_OPT_BEACON;
 
-	return nwkIb.endpoint[header->nwkDstEndpoint](&ind); // call endpoint handler
+	return nwkIb.endpoint[header->nwkDstEndpoint](&ind);
 }
 
 /*************************************************************************//**
@@ -523,11 +519,10 @@ static void nwkRxHandleIndication(NwkFrame_t *frame)
 	bool ack;
 
 	nwkRxAckControl = 0;
-	ack = nwkRxIndicateDataFrame(frame); 	// this functions calls EndPoint callback
-																				// ack only is sent if in callback frame
-																				// is processed correctly
+	ack = nwkRxIndicateDataFrame(frame);
+
 	if (0 == frame->header.nwkFcf.ackRequest) {
-		ack = false;	// if message received doesn't require ack set it as false
+		ack = false;
 	}
 
 	if (NWK_BROADCAST_ADDR == frame->header.macDstAddr &&
@@ -560,7 +555,7 @@ void nwkRxTaskHandler(void)
 
 	while (NULL != (frame = nwkFrameNext(frame))) {
 		switch (frame->state) {
-		case NWK_RX_STATE_RECEIVED: // enabled by PHY_DataInd()
+		case NWK_RX_STATE_RECEIVED:
 		{
 			nwkRxHandleReceivedFrame(frame);
 		}

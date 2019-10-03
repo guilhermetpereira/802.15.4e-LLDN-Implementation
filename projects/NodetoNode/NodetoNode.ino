@@ -14,7 +14,7 @@ extern "C" {
 #include <LwMesh.h>
 
 /* Definitions */
-#define APP_ADDR    0x8001
+#define APP_ADDR    0x0001
 #define APP_PANID   0x0002
 #define APP_CHANNEL 0x0F
 
@@ -40,7 +40,7 @@ bool rx_frame(NWK_DataInd_t *ind)
 {
   Serial.write("\nMENSAGEM = ");
   char rec_data = (char)*(ind->data);
-  Serial.print(rec_data);
+  Serial.print((char)rec_data);
   return true;
 }
 static void appInit(void)

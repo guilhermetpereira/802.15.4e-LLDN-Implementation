@@ -16,7 +16,7 @@ extern "C" {
  void println(char *x) { Serial.println(x); Serial.flush(); }
 
 /* Definitions */
-#define APP_ADDR    0x8001
+#define APP_ADDR    0x0001
 #define APP_PANID   0x0002
 #define APP_CHANNEL 0x0F
 
@@ -65,7 +65,7 @@ static void appInit(void)
   PHY_SetRxState(true);
   
   // Set Up Data Message Frame
-  msgReq.dstAddr      = 0xFFFF;
+  msgReq.dstAddr      = APP_ADDR;
   msgReq.dstEndpoint  = APP_DATA_ENDPOINT;
   msgReq.srcEndpoint  = APP_DATA_ENDPOINT;
   msgReq.options      = NWK_OPT_ACK_REQUEST; 
