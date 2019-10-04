@@ -105,6 +105,48 @@ typedef struct  NwkFrameBeaconHeader_t {
 	uint8_t macPending;
 } NwkFrameBeaconHeader_t;
 
+typedef struct  NwkFrameBeaconHeaderLLDN_t {
+	struct
+	{
+		uint8_t FrameType 			: 3;
+		uint8_t SecurtyEnabled 	: 1;
+		uint8_t FrameVersion		: 1;
+		uint8_t ackRequest			: 1;
+		uint8_t SubFrameType		: 2;
+	} macFcf;
+
+	uint8_t macSeqNumber;
+	struct
+	{
+		struct
+		{
+			uint8_t secLevel 					: 3;
+			uint8_t KeyIdentifierMode : 2;
+			uint8_t counterSupression : 1;
+			uint8_t counterSize				: 1;
+			uint8_t reserved 					: 1;
+		}secControl;
+		uint8_t *FrameCounter;
+		uint8_t *KeyIdentifier;
+	} macAuxSecurityHeader;
+
+	struct
+	{
+		uint8_t txState 				: 3;
+		uint8_t txDir 					: 1;
+		uint8_t reserved				: 1;
+		uint8_t numMgmtTimeslots: 3;
+ } Flags;
+
+	uint8_t PanId;
+	uint8_t confSeqNumber;
+	uint8_t TimeSlotSize;
+
+	uint8_t* numBTSuperframe;
+	uint8_t* GroupAck;
+	
+} NwkFrameBeaconHeaderLLDN_t;
+
 typedef struct  NwkFrameMulticastHeader_t {
 	uint16_t nonMemberRadius    : 4;
 	uint16_t maxNonMemberRadius : 4;
