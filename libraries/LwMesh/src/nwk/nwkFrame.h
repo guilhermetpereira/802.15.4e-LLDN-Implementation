@@ -144,7 +144,7 @@ typedef struct  NwkFrameBeaconHeaderLLDN_t {
 
 	uint8_t* numBTSuperframe;
 	uint8_t* GroupAck;
-	
+
 } NwkFrameBeaconHeaderLLDN_t;
 
 typedef struct  NwkFrameMulticastHeader_t {
@@ -161,6 +161,7 @@ typedef struct NwkFrame_t {
 	union {
 		NwkFrameHeader_t header;
 		NwkFrameBeaconHeader_t beacon;
+		NwkFrameBeaconHeaderLLDN_t LL-beacon;
 		uint8_t data[NWK_FRAME_MAX_PAYLOAD_SIZE];
 	};
 
