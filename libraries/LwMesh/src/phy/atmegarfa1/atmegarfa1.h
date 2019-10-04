@@ -341,9 +341,14 @@ struct __struct_XAH_CTRL_1_REG
   uint8_t               : 1;
   uint8_t aackPromMode  : 1; // Enable Acknowledgment in Promiscuous Mode
   uint8_t aackAckTime   : 1; // Reduce Acknowledgment Time
-  uint8_t               : 1;
+  uint8_t               : 1; // has to be changed to 0
+  /*
+  ** If AACK_FLTR_RES_FT = 1 reserved frame types are filtered similar to data frames as
+  ** specified in IEEE 802.15.4-2006.If AACK_FLTR_RES_FT = 0 a received, reserved frame is only
+  ** checked for a valid FCS.
+  */
   uint8_t aackUpldResFt : 1; // Process Reserved Frames
-  uint8_t aackFltrResFt : 1; // Filter Reserved Frames
+  uint8_t aackFltrResFt : 1; // If AACK_UPLD_RES_FT = 1 received frames indicated as reserved are further processed.
   uint8_t               : 2;
 };
 

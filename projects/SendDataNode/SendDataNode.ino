@@ -69,7 +69,7 @@ static void appInit(void)
   msgReq.dstEndpoint  = APP_DATA_ENDPOINT;
   msgReq.srcEndpoint  = APP_DATA_ENDPOINT;
   msgReq.options      = NWK_OPT_ACK_REQUEST; 
-  msgReq.data         = &message;
+  msgReq.data         = (uint8_t)&message;
   msgReq.size         = sizeof(message);
    msgReq.confirm      = appDataConf; // function called after ACK CONFIRM
 
