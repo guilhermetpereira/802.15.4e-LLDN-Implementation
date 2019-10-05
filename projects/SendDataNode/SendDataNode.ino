@@ -50,7 +50,7 @@ static void appDataConf(NWK_DataReq_t *req)
 static void tmrSendDataHandler(SYS_Timer_t *timer)
 {
   NWK_DataReq(&msgReq);
-//  Serial.write("\nMESSAGE SENT");
+  Serial.write("\nMESSAGE SENT");
 //  Serial.write(message);
 }
 
@@ -65,13 +65,13 @@ static void appInit(void)
   PHY_SetRxState(true);
   
   // Set Up Data Message Frame
-  msgReq.dstAddr      = APP_ADDR;
-  msgReq.dstEndpoint  = APP_DATA_ENDPOINT;
-  msgReq.srcEndpoint  = APP_DATA_ENDPOINT;
-  msgReq.options      = NWK_OPT_ACK_REQUEST; 
-  msgReq.data         = (uint8_t)&message;
-  msgReq.size         = sizeof(message);
-   msgReq.confirm      = appDataConf; // function called after ACK CONFIRM
+//  msgReq.dstAddr      = APP_ADDR;
+//  msgReq.dstEndpoint  = APP_DATA_ENDPOINT;
+//  msgReq.srcEndpoint  = APP_DATA_ENDPOINT;
+  msgReq.options      = NWK_OPT_LLDN_BEACON | NWK_OPT_LLDN_BEACON_DISCOVERY; 
+//  msgReq.data         = (uint8_t)&message;
+//  msgReq.size         = sizeof(message);
+//   msgReq.confirm      = appDataConf; // function called after ACK CONFIRM
 
 
   // Set up Timer

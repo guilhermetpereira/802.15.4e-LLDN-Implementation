@@ -76,6 +76,8 @@ extern "C" {
 
 #define NWK_ENDPOINTS_AMOUNT            16
 
+#define NWK_NUMBER_OF_MGMT_TIMESLOTS    0b111
+
 /*- Types ------------------------------------------------------------------*/
 typedef enum {
 	NWK_SUCCESS_STATUS                      = 0x00,

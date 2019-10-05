@@ -120,6 +120,28 @@ void nwkTxBeaconFrame(NwkFrame_t *frame)
 	beacon->macSrcPanId = nwkIb.panId;
 	beacon->macSrcAddr = nwkIb.addr;
 }
+void nwkTxBeaconFrameLLDN(NwkFrame_t *frame)
+{
+	NwkFrameBeaconHeaderLLDN_t *beacon = &frame->LLbeacon;
+	frame->state = NWK_TX_STATE_SEND;
+	frame->tx.status = NWK_SUCCESS_STATUS;
+	frame->tx.timeout = 0;
+
+	beacon->macFcf.FrameType				= 0b100; 	// LLDN type
+	beacon->macFcf.SecurityEnabled 	= 0b1;
+	beacon->macFcf.FrameVersion			= 0b0;   	// zero to indicate compatible with IEEE Std 802.15.4.
+	beacon->macFcf.ackRequest				= 0b0;
+	beacon->macFcf.SubFrameType			= 0b00; 	// Subtype = LL-Beacon
+
+	beacon->macSeqNumber = ++nwkIb.macSeqNum;
+
+	// Auxiliarty Security is not fully implemented, it is only enabled so Sequence Number is present in frame
+	beacon->macSecHeader.Control.secLevel	= 0b000;
+	beacon->macSecHeader.Control.KeyId		= 0b00;
+	beacon->macSecHeader.Control.countSup	= 0b0;
+	beacon->macSecHeader.Control.countSize= 0b0;
+}
+
 void nwkTxFrame(NwkFrame_t *frame)
 {
 	NwkFrameHeader_t *header = &frame->header;

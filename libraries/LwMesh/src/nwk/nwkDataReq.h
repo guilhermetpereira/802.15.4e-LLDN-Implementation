@@ -59,15 +59,35 @@ extern "C" {
 #include <sys\sysTypes.h>
 #include <sys\sysConfig.h>
 
+/*- Definitions ------------------------------------------------------------*/
+
+#define FRAME_SUBTYPE_LL_BEACON				0x00
+#define FRAME_SUBTYPE_LL_DATA					0x01
+#define FRAME_SUBTYPE_LL_ACK					0x02
+#define FRAME_SUBTYPE_LL_MAC_COMMAND	0x03
+
+#define OPTIONS_CLEAR 0x0000
+
 /*- Types ------------------------------------------------------------------*/
 enum {
-	NWK_OPT_ACK_REQUEST          = 1 << 0,
-	NWK_OPT_ENABLE_SECURITY      = 1 << 1,
-	NWK_OPT_BROADCAST_PAN_ID     = 1 << 2,
-	NWK_OPT_LINK_LOCAL           = 1 << 3,
-	NWK_OPT_MULTICAST            = 1 << 4,
-	NWK_OPT_BEACON               = 1 << 5,
+	NWK_OPT_ACK_REQUEST          	= 1 << 0,
+	NWK_OPT_ENABLE_SECURITY      	= 1 << 1,
+	NWK_OPT_BROADCAST_PAN_ID     	= 1 << 2,
+	NWK_OPT_LINK_LOCAL           	= 1 << 3,
+	NWK_OPT_MULTICAST            	= 1 << 4,
+
+	NWK_OPT_BEACON               	= 1 << 5,
+
+	NWK_OPT_LLDN_BEACON					 	= 1 << 6,
+	NWK_OPT_LLDN_BEACON_ONLINE		= 1 << 7,
+	NWK_OPT_LLDN_BEACON_DISCOVERY = 1 << 8,
+	NWK_OPT_LLDN_BEACON_CONFIG		= 1 << 9,
+	NWK_OPT_LLDN_BEACON_RESET			= 1 << 10,
+	// NWK_OPT_LLDN_BEACON_FIRST			= 1 << 11,
+	NWK_OPT_LLDN_BEACON_SECOND		= 1 << 12,
+	NWK_OPT_LLDN_BEACON_THIRD			= 1 << 13,
 };
+
 
 typedef struct NWK_DataReq_t {
 	/* service fields */
@@ -79,7 +99,7 @@ typedef struct NWK_DataReq_t {
 	uint16_t dstAddr;
 	uint8_t dstEndpoint;
 	uint8_t srcEndpoint;
-	uint8_t options;
+	uint16_t options;
 #ifdef NWK_ENABLE_MULTICAST
 	uint8_t memberRadius;
 	uint8_t nonMemberRadius;
