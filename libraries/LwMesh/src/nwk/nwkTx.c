@@ -140,7 +140,6 @@ void nwkTxBeaconFrameLLDN(NwkFrame_t *frame)
 	beacon->macSecHeader.Control.KeyId		= 0b00;
 	beacon->macSecHeader.Control.countSup	= 0b0;
 	beacon->macSecHeader.Control.countSize= 0b0;
-	frame->size = sizeof(NwkFrameBeaconHeaderLLDN_t);
 }
 
 void nwkTxFrame(NwkFrame_t *frame)

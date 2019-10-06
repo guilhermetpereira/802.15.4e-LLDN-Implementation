@@ -110,14 +110,25 @@ void NWK_DataReq(NWK_DataReq_t *req)
 static void nwkDataReqSendFrame(NWK_DataReq_t *req)
 {
 	NwkFrame_t *frame;
-
-	if(req->options & NWK_OPT_LLDN_BEACON)
+	if(req->options < NWK_OPT_LLDN_BEACON )
 	{
-		if( NULL == (frame = nwkFrameAlloc_LLDN(FRAME_SUBTYPE_LL_BEACON))){
+		if(NULL == (frame = nwkFrameAlloc()))
+		{
 			req->state = NWK_DATA_REQ_STATE_CONFIRM;
 			req->status = NWK_OUT_OF_MEMORY_STATUS;
 			return;
 		}
+	}	else {
+		if( NULL == (frame = nwkFrameAlloc_LLDN(req->options)))
+		{
+			req->state = NWK_DATA_REQ_STATE_CONFIRM;
+			req->status = NWK_OUT_OF_MEMORY_STATUS;
+			return;
+		}
+	}
+
+	if(req->options & NWK_OPT_LLDN_BEACON)
+	{
 		frame->tx.control = 0;
 
 		if (req->options & NWK_OPT_LLDN_BEACON_DISCOVERY) frame->LLbeacon.Flags.txState = 0b100;
@@ -135,20 +146,7 @@ static void nwkDataReqSendFrame(NWK_DataReq_t *req)
 
 		nwkTxBeaconFrameLLDN(frame);
 	}
-
-	else if (NULL == (frame = nwkFrameAlloc())) {
-		req->state = NWK_DATA_REQ_STATE_CONFIRM;
-		req->status = NWK_OUT_OF_MEMORY_STATUS;
-		return;
-	}
-
-	req->frame = frame;
-	req->state = NWK_DATA_REQ_STATE_WAIT_CONF;
-
-	frame->tx.confirm = nwkDataReqTxConf;
-
-
-	if(req->options & NWK_OPT_BEACON )
+	else if(req->options & NWK_OPT_BEACON )
 	{
 		frame->tx.control = 0;
 
@@ -167,7 +165,7 @@ static void nwkDataReqSendFrame(NWK_DataReq_t *req)
 
 		nwkTxBeaconFrame(frame);
 	}
-	else if( !(req->options & NWK_OPT_LLDN_BEACON))
+	else
 	{
 		frame->tx.control = (req->options & NWK_OPT_BROADCAST_PAN_ID) ? NWK_TX_CONTROL_BROADCAST_PAN_ID : 0;
 
@@ -207,6 +205,10 @@ static void nwkDataReqSendFrame(NWK_DataReq_t *req)
 
 		nwkTxFrame(frame);
 	}
+	req->frame = frame;
+	req->state = NWK_DATA_REQ_STATE_WAIT_CONF;
+
+	frame->tx.confirm = nwkDataReqTxConf;
 }
 
 /*************************************************************************//**

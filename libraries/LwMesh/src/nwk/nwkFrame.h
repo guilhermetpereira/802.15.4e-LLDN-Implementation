@@ -59,12 +59,6 @@ extern "C" {
 
 /*- Definitions ------------------------------------------------------------*/
 #define NWK_FRAME_MAX_PAYLOAD_SIZE   127
-
-#define FRAME_SUBTYPE_LL_BEACON				0x00
-#define FRAME_SUBTYPE_LL_DATA					0x01
-#define FRAME_SUBTYPE_LL_ACK					0x02
-#define FRAME_SUBTYPE_LL_MAC_COMMAND	0x11
-
 /*- Types ------------------------------------------------------------------*/
 COMPILER_PACK_SET(1)
 typedef struct  NwkFrameHeader_t {
@@ -131,8 +125,6 @@ typedef struct  NwkFrameBeaconHeaderLLDN_t {
 			uint8_t countSize	: 1;
 			uint8_t reserved 	: 1;
 		}Control;
-		// uint8_t *FrameCounter;
-		// uint8_t *KeyIdentifier;
 	} macSecHeader;
 
 	struct
@@ -147,10 +139,25 @@ typedef struct  NwkFrameBeaconHeaderLLDN_t {
 	uint8_t confSeqNumber;
 	uint8_t TimeSlotSize;
 
-	// uint8_t numBTSuperframe;
-	// uint8_t* GroupAck;
 
 } NwkFrameBeaconHeaderLLDN_t;
+
+typedef struct  NwkFrameGeneralHeaderLLDN_t {
+	uint8_t macFcf;
+	uint8_t macSeqNumber;
+	struct
+	{
+		struct
+		{
+			uint8_t secLevel 	: 3;
+			uint8_t KeyId			: 2;
+			uint8_t countSup 	: 1;
+			uint8_t countSize	: 1;
+			uint8_t reserved 	: 1;
+		}Control;
+	} macSecHeader;
+} NwkFrameGeneralHeaderLLDN_t;
+
 
 typedef struct  NwkFrameMulticastHeader_t {
 	uint16_t nonMemberRadius    : 4;
@@ -190,7 +197,7 @@ COMPILER_PACK_RESET()
 /*- Prototypes -------------------------------------------------------------*/
 void nwkFrameInit(void);
 NwkFrame_t *nwkFrameAlloc(void);
-NwkFrame_t *nwkFrameAlloc_LLDN(uint8_t subtype);
+NwkFrame_t *nwkFrameAlloc_LLDN(uint16_t subtype);
 void nwkFrameFree(NwkFrame_t *frame);
 NwkFrame_t *nwkFrameNext(NwkFrame_t *frame);
 void nwkFrameCommandInit(NwkFrame_t *frame);
