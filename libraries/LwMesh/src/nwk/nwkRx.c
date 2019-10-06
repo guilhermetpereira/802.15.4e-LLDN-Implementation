@@ -78,6 +78,7 @@ enum {
 	NWK_RX_STATE_ROUTE    = 0x23,
 	NWK_RX_STATE_FINISH   = 0x24,
 	NWK_RX_STATE_BEACON   = 0x25,
+	NWK_RX_STATE_LLBEACON = 0x26,
 };
 
 typedef struct NwkDuplicateRejectionEntry_t {
@@ -123,7 +124,14 @@ void __attribute__((weak)) PHY_DataInd(PHY_DataInd_t *ind)
 {
 	NwkFrame_t *frame;
 
-	if(0x88 == ind->data[1])
+	if(0x0c == ind->data[0])
+	{
+		if(ind->size < sizeof(NwkFrameBeaconHeaderLLDN_t))
+		{
+			return;
+		}
+	}
+	else if(0x88 == ind->data[1])
 	{
 		if((0x61 != ind->data[0] && 0x41 != ind->data[0]) || ind->size < sizeof(NwkFrameHeader_t))
 		{
@@ -146,8 +154,14 @@ void __attribute__((weak)) PHY_DataInd(PHY_DataInd_t *ind)
 		return;
 	}
 
-	frame->state = ((0x88 == ind->data[1]) ? NWK_RX_STATE_RECEIVED : NWK_RX_STATE_BEACON);
-
+	if(0x0c == ind->data[0])
+	{
+		frame->state = NWK_RX_STATE_LLBEACON;
+	}
+	else
+	{
+		frame->state = ((0x88 == ind->data[1]) ? NWK_RX_STATE_RECEIVED : NWK_RX_STATE_BEACON);
+	}
 	frame->size = ind->size;
 	frame->rx.lqi = ind->lqi;
 	frame->rx.rssi = ind->rssi;
@@ -511,6 +525,33 @@ static bool nwkRxIndicateBeaconFrame(NwkFrame_t *frame)
 
 	return nwkIb.endpoint[header->nwkDstEndpoint](&ind);
 }
+/*************************************************************************//**
+*****************************************************************************/
+static bool nwkRxIndicateLLBeaconFrame(NwkFrame_t *frame)
+{
+	NwkFrameBeaconHeaderLLDN_t *header = &frame->LLbeacon;
+	NWK_DataInd_t ind;
+
+	frame->state = NWK_RX_STATE_FINISH;
+
+	if (NULL == nwkIb.endpoint[3]) {
+	return false;
+	}
+
+	// ind.srcAddr = frame->beacon.macSrcAddr;
+	// ind.dstAddr = frame->beacon.macSrcAddr;
+	ind.srcEndpoint = 0;
+	ind.dstEndpoint = 0;
+	ind.data = &frame->LLbeacon;
+	// ind.size = nwkFramePayloadSize(frame);
+	ind.lqi = frame->rx.lqi;
+	ind.rssi = frame->rx.rssi;
+
+	ind.options	= NWK_IND_OPT_LLDN_BEACON;
+
+
+	return nwkIb.endpoint[3](&ind);
+}
 
 /*************************************************************************//**
 *****************************************************************************/
@@ -592,6 +633,12 @@ void nwkRxTaskHandler(void)
 		case NWK_RX_STATE_BEACON:
 		{
 			nwkRxIndicateBeaconFrame(frame);
+		}
+		break;
+
+		case NWK_RX_STATE_LLBEACON:
+		{
+			nwkRxIndicateLLBeaconFrame(frame);
 		}
 		break;
 		}

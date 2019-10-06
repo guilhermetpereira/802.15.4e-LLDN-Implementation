@@ -111,15 +111,15 @@ typedef struct  NwkFrameBeaconHeader_t {
 } NwkFrameBeaconHeader_t;
 
 typedef struct  NwkFrameBeaconHeaderLLDN_t {
-	struct
-	{
-		uint8_t FrameType 				: 3;
-		uint8_t SecurityEnabled 	: 1;
-		uint8_t FrameVersion			: 1;
-		uint8_t ackRequest				: 1;
-		uint8_t SubFrameType			: 2;
-	} macFcf;
-
+	// struct
+	// {
+	// 	uint8_t FrameType 				: 3;
+	// 	uint8_t SecurityEnabled 	: 1;
+	// 	uint8_t FrameVersion			: 1;
+	// 	uint8_t ackRequest				: 1;
+	// 	uint8_t SubFrameType			: 2;
+	// } macFcf;
+	uint8_t macFcf;
 	uint8_t macSeqNumber;
 	struct
 	{

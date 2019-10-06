@@ -10,6 +10,7 @@ extern "C" {
 #include "phy.h"
 #include "sys.h"
 #include "nwk.h"
+#include "nwk\NwkFrame.h"
 #include <sys\sysTimer.h>
 #include <LwMesh.h>
 
@@ -38,9 +39,12 @@ static AppState_t appstate = APP_STATE_INITIAL;
 //
 bool rx_frame(NWK_DataInd_t *ind)
 {
-  Serial.write("\nMENSAGEM = ");
-  char rec_data = (char)*(ind->data);
-  Serial.print((char)rec_data);
+  Serial.write("\nFrame Receiveid: ");
+    NwkFrameBeaconHeaderLLDN_t *beacon = (NwkFrameBeaconHeaderLLDN_t*)ind->data;
+    if(beacon->macFcf == 0xc)
+      Serial.print("\nFrame Type = LLDN-Beacon, Security Enabled ");
+    Serial.print("\nConfiguration Sequence Number: "); Serial.print(beacon->confSeqNumber);
+    
   return true;
 }
 static void appInit(void)
@@ -48,12 +52,14 @@ static void appInit(void)
   Serial.begin(115200);
   
   // Set Network Parameters
-  NWK_SetAddr(APP_ADDR);        // Endereco desse nodo visto pela Rede
-  NWK_SetPanId(APP_PANID);      // Endereco do coordenador visto pela rede
+  
+//  NWK_SetAddr(APP_ADDR);        // Endereco desse nodo visto pela Rede
+//  NWK_SetPanId(APP_PANID);      // Endereco do coordenador visto pela rede
+  PHY_SetPromiscuousMode(true);
   PHY_SetChannel(0x1a); 
   PHY_SetRxState(true);
 
-  NWK_OpenEndpoint(1, rx_frame); 
+  NWK_OpenEndpoint(3, rx_frame); 
 }
 
 

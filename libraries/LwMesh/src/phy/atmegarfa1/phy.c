@@ -139,7 +139,7 @@ void PHY_SetPromiscuousMode(bool mode)
 //	ignored.
 
 		XAH_CTRL_1_REG_s.aackPromMode = 1;	// Enable promiscuous mode
-		XAH_CTRL_1_REG_s.aackUpldResFt = 0;	// Enable reserved frame type reception ; this was changed to zero
+		XAH_CTRL_1_REG_s.aackUpldResFt = 1;	// Enable reserved frame type reception ; this was changed to one
                                         // so that the addres isn't checked by filter
 		XAH_CTRL_1_REG_s.aackFltrResFt = 0;	// Disable filter of reserved frame types
 		CSMA_SEED_1_REG_s.aackDisAck = 1;		// Disable generation of acknowledgment

@@ -99,10 +99,9 @@ NwkFrame_t *nwkFrameAlloc_LLDN(uint8_t subtype)
 	for (uint8_t i = 0; i < NWK_BUFFERS_AMOUNT; i++) {
 		if (NWK_FRAME_STATE_FREE == nwkFrameFrames[i].state) {
 			memset(&nwkFrameFrames[i], 0, sizeof(NwkFrame_t));
-			if(subtype == FRAME_SUBTYPE_LL_BEACON)
-				nwkFrameFrames[i].size = sizeof(NwkFrameBeaconHeaderLLDN_t);
+			// if(subtype == FRAME_SUBTYPE_LL_BEACON) nwkFrameFrames[i].size = sizeof(NwkFrameBeaconHeaderLLDN_t);
+			// nwkFrameFrames[i].payload = nwkFrameFrames[i].data + nwkFrameFrames[i].size;
 
-			nwkFrameFrames[i].payload = nwkFrameFrames[i].data + nwkFrameFrames[i].size;
 			nwkIb.lock++;
 			return &nwkFrameFrames[i];
 		}

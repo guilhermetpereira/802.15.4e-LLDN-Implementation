@@ -61,6 +61,8 @@ static void appInit(void)
 //  // Set Network Parameters
   NWK_SetAddr(APP_PANID);        // Endereco desse nodo visto pela Rede
   NWK_SetPanId(APP_PANID);       // Endereco do coordenador visto pela rede 
+  PHY_SetPromiscuousMode(true);
+
   PHY_SetChannel(0x1a); 
   PHY_SetRxState(true);
   

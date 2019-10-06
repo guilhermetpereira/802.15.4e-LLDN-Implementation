@@ -67,7 +67,8 @@ enum {
 	NWK_IND_OPT_BROADCAST_PAN_ID  = 1 << 4,
 	NWK_IND_OPT_LINK_LOCAL        = 1 << 5,
 	NWK_IND_OPT_MULTICAST         = 1 << 6,
-	NWK_IND_OPT_BEACON			  = 1 << 7,
+	NWK_IND_OPT_BEACON			  		= 1 << 7,
+	NWK_IND_OPT_LLDN_BEACON				= 1 << 8,
 };
 
 typedef struct NWK_DataInd_t {
@@ -75,7 +76,7 @@ typedef struct NWK_DataInd_t {
 	uint16_t dstAddr;
 	uint8_t srcEndpoint;
 	uint8_t dstEndpoint;
-	uint8_t options;
+	uint16_t options;
 	uint8_t *data;
 	uint8_t size;
 	uint8_t lqi;

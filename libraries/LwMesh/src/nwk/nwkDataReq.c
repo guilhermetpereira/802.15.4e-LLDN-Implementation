@@ -148,7 +148,7 @@ static void nwkDataReqSendFrame(NWK_DataReq_t *req)
 	frame->tx.confirm = nwkDataReqTxConf;
 
 
-	if(req->options & NWK_OPT_BEACON)
+	if(req->options & NWK_OPT_BEACON )
 	{
 		frame->tx.control = 0;
 
@@ -167,7 +167,7 @@ static void nwkDataReqSendFrame(NWK_DataReq_t *req)
 
 		nwkTxBeaconFrame(frame);
 	}
-	else
+	else if( !(req->options & NWK_OPT_LLDN_BEACON))
 	{
 		frame->tx.control = (req->options & NWK_OPT_BROADCAST_PAN_ID) ? NWK_TX_CONTROL_BROADCAST_PAN_ID : 0;
 
