@@ -70,7 +70,6 @@ extern "C" {
 
 /*- Types ------------------------------------------------------------------*/
 
-
 typedef struct NWK_DataReq_t {
 	/* service fields */
 	void *next;
@@ -94,6 +93,39 @@ typedef struct NWK_DataReq_t {
 	uint8_t status;
 	uint8_t control;
 } NWK_DataReq_t;
+
+typedef struct DiscoveryResponse {
+	uint8_t identifier;
+	uint16_t macAddr;
+	struct{
+		uint8_t tsDuration	 : 7;
+		uint8_t dirIndicator : 1;
+	}ts_dir;
+} DiscoveryResponse;
+
+typedef struct ConfigStatus {
+	uint8_t identifier;
+	uint8_t s_macAddr;
+	uint8_t assTimeSlot;
+	uint16_t macAddr;
+	struct{
+		uint8_t tsDuration 		: 7;
+		uint8_t dirIndicator 	: 1;
+	}ts_dir;
+} ConfigStatus;
+
+typedef struct ConfigParms {
+	uint8_t identifier;
+	uint8_t s_macAddr;
+	uint8_t tx_channel;
+	uint8_t assTimeSlot;
+	uint16_t macAddr;
+	struct{
+		uint8_t tsDuration	: 7;
+		uint8_t mgmtFrames 	: 1;
+	} conf;
+} ConfigParams;
+
 
 /*- Prototypes -------------------------------------------------------------*/
 void NWK_DataReq(NWK_DataReq_t *req);

@@ -117,14 +117,11 @@ typedef struct  NwkFrameBeaconHeaderLLDN_t {
 	uint8_t macSeqNumber;
 	struct
 	{
-		struct
-		{
-			uint8_t secLevel 	: 3;
-			uint8_t KeyId			: 2;
-			uint8_t countSup 	: 1;
-			uint8_t countSize	: 1;
-			uint8_t reserved 	: 1;
-		}Control;
+		uint8_t secLevel 	: 3;
+		uint8_t KeyId			: 2;
+		uint8_t countSup 	: 1;
+		uint8_t countSize	: 1;
+		uint8_t reserved 	: 1;
 	} macSecHeader;
 
 	struct
@@ -147,14 +144,11 @@ typedef struct  NwkFrameGeneralHeaderLLDN_t {
 	uint8_t macSeqNumber;
 	struct
 	{
-		struct
-		{
-			uint8_t secLevel 	: 3;
-			uint8_t KeyId			: 2;
-			uint8_t countSup 	: 1;
-			uint8_t countSize	: 1;
-			uint8_t reserved 	: 1;
-		}Control;
+		uint8_t secLevel 	: 3;
+		uint8_t KeyId			: 2;
+		uint8_t countSup 	: 1;
+		uint8_t countSize	: 1;
+		uint8_t reserved 	: 1;
 	} macSecHeader;
 } NwkFrameGeneralHeaderLLDN_t;
 
@@ -174,6 +168,7 @@ typedef struct NwkFrame_t {
 		NwkFrameHeader_t header;
 		NwkFrameBeaconHeader_t beacon;
 		NwkFrameBeaconHeaderLLDN_t LLbeacon;
+		NwkFrameGeneralHeaderLLDN_t LLgeneral;
 		uint8_t data[NWK_FRAME_MAX_PAYLOAD_SIZE];
 	};
 

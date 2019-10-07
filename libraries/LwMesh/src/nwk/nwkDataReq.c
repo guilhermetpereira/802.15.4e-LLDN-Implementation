@@ -146,6 +146,12 @@ static void nwkDataReqSendFrame(NWK_DataReq_t *req)
 
 		nwkTxBeaconFrameLLDN(frame);
 	}
+	else if(req->options & NWK_OPT_MAC_COMMAND)
+	{
+		memcpy(frame->payload, req->data, req->size);
+		frame->size += req->size;
+		void nwkTxMacCommandFrameLLDN(NwkFrame_t *frame);
+	}
 	else if(req->options & NWK_OPT_BEACON )
 	{
 		frame->tx.control = 0;

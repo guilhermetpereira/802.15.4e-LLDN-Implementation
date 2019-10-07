@@ -120,6 +120,8 @@ void nwkTxBeaconFrame(NwkFrame_t *frame)
 	beacon->macSrcPanId = nwkIb.panId;
 	beacon->macSrcAddr = nwkIb.addr;
 }
+
+
 void nwkTxBeaconFrameLLDN(NwkFrame_t *frame)
 {
 	NwkFrameBeaconHeaderLLDN_t *beacon = &frame->LLbeacon;
@@ -136,10 +138,27 @@ void nwkTxBeaconFrameLLDN(NwkFrame_t *frame)
 	beacon->macSeqNumber = ++nwkIb.macSeqNum;
 
 	// Auxiliarty Security is not fully implemented, it is only enabled so Sequence Number is present in frame
-	beacon->macSecHeader.Control.secLevel	= 0b000;
-	beacon->macSecHeader.Control.KeyId		= 0b00;
-	beacon->macSecHeader.Control.countSup	= 0b0;
-	beacon->macSecHeader.Control.countSize= 0b0;
+	beacon->macSecHeader.secLevel	= 0b000;
+	beacon->macSecHeader.KeyId		= 0b00;
+	beacon->macSecHeader.countSup	= 0b0;
+	beacon->macSecHeader.countSize= 0b0;
+}
+
+void nwkTxMacCommandFrameLLDN(NwkFrame_t *frame)
+{
+	NwkFrameGeneralHeaderLLDN_t *mac_command = &frame->LLgeneral;
+	frame->state = NWK_TX_STATE_SEND;
+	frame->tx.status = NWK_SUCCESS_STATUS;
+	frame->tx.timeout = 0;
+
+	mac_command->macFcf = 0xcc;
+	mac_command->macSeqNumber = ++nwkIb.macSeqNum;
+
+	// Auxiliarty Security is not fully implemented, it is only enabled so Sequence Number is present in frame
+	mac_command->macSecHeader.secLevel	= 0b000;
+	mac_command->macSecHeader.KeyId		= 0b00;
+	mac_command->macSecHeader.countSup	= 0b0;
+	mac_command->macSecHeader.countSize= 0b0;
 }
 
 void nwkTxFrame(NwkFrame_t *frame)

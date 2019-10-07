@@ -71,13 +71,14 @@ enum {
 void nwkTxInit(void);
 void nwkTxFrame(NwkFrame_t *frame);
 void nwkTxBeaconFrame(NwkFrame_t *frame);
-void nwkTxBeaconFrameLLDN(NwkFrame_t *frame);
 void nwkTxBroadcastFrame(NwkFrame_t *frame);
 bool nwkTxAckReceived(NWK_DataInd_t *ind);
 void nwkTxConfirm(NwkFrame_t *frame, uint8_t status);
 void nwkTxEncryptConf(NwkFrame_t *frame);
 void nwkTxTaskHandler(void);
 
+void nwkTxMacCommandFrameLLDN(NwkFrame_t *frame)
+void nwkTxBeaconFrameLLDN(NwkFrame_t *frame);
 #ifdef __cplusplus
 }
 #endif
