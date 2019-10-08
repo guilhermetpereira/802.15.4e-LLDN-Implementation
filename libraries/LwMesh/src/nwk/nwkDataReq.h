@@ -61,12 +61,9 @@ extern "C" {
 
 /*- Definitions ------------------------------------------------------------*/
 
-#define FRAME_SUBTYPE_LL_BEACON				0x00
-#define FRAME_SUBTYPE_LL_DATA					0x01
-#define FRAME_SUBTYPE_LL_ACK					0x02
-#define FRAME_SUBTYPE_LL_MAC_COMMAND	0x03
-
-#define OPTIONS_CLEAR 0x0000
+#define LL_DISCOVERY_RESPONSE 		0x0d
+#define LL_CONFIGURATION_STATUS 	0x0e
+#define LL_CONFIGURATION_REQUEST 	0x0f
 
 /*- Types ------------------------------------------------------------------*/
 
@@ -114,7 +111,7 @@ typedef struct ConfigStatus {
 	}ts_dir;
 } ConfigStatus;
 
-typedef struct ConfigParms {
+typedef struct ConfigRequest {
 	uint8_t identifier;
 	uint8_t s_macAddr;
 	uint8_t tx_channel;
@@ -124,7 +121,7 @@ typedef struct ConfigParms {
 		uint8_t tsDuration	: 7;
 		uint8_t mgmtFrames 	: 1;
 	} conf;
-} ConfigParams;
+} ConfigRequest;
 
 
 /*- Prototypes -------------------------------------------------------------*/

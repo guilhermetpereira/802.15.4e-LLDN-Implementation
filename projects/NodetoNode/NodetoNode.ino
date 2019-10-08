@@ -39,27 +39,45 @@ static AppState_t appstate = APP_STATE_INITIAL;
 //
 bool rx_frame(NWK_DataInd_t *ind)
 {
-  Serial.write("\nFrame Receiveid: ");
+  Serial.write("\n****************************\nFrame Receiveid: ");
     NwkFrameBeaconHeaderLLDN_t *beacon = (NwkFrameBeaconHeaderLLDN_t*)ind->data;
     if(beacon->macFcf == 0xc)
       Serial.print("\nFrame Type = LLDN-Beacon, Security Enabled ");
+    Serial.print("\nNetwork State: "); Serial.print(beacon->Flags.txState);
     Serial.print("\nConfiguration Sequence Number: "); Serial.print(beacon->confSeqNumber);
     
   return true;
 }
+
+bool maccommand_received(NWK_DataInd_t *ind)
+{
+  Serial.write("\nFrame Receiveid: ");
+  Serial.print(ind->data[0], HEX);
+  if(ind->data[2] == LL_CONFIGURATION_REQUEST)
+  {
+    ConfigRequest *d= (ConfigRequest *)ind->data;
+    Serial.print(d->identifier);
+  }
+}
+
 static void appInit(void)
 {
   Serial.begin(115200);
   
   // Set Network Parameters
   
-//  NWK_SetAddr(APP_ADDR);        // Endereco desse nodo visto pela Rede
-//  NWK_SetPanId(APP_PANID);      // Endereco do coordenador visto pela rede
   PHY_SetPromiscuousMode(true);
   PHY_SetChannel(0x1a); 
   PHY_SetRxState(true);
 
-  NWK_OpenEndpoint(3, rx_frame); 
+  NWK_SetAddr(APP_ADDR);        // Endereco desse nodo visto pela Rede
+  NWK_SetPanId(APP_PANID);      // Endereco do coordenador visto pela rede
+ 
+
+
+  NWK_OpenEndpoint(1, rx_frame);
+  NWK_OpenEndpoint(2, maccommand_received);
+   
 }
 
 

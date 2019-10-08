@@ -72,13 +72,14 @@
 
 /*- Types ------------------------------------------------------------------*/
 enum {
-	NWK_RX_STATE_RECEIVED = 0x20,
-	NWK_RX_STATE_DECRYPT  = 0x21,
-	NWK_RX_STATE_INDICATE = 0x22,
-	NWK_RX_STATE_ROUTE    = 0x23,
-	NWK_RX_STATE_FINISH   = 0x24,
-	NWK_RX_STATE_BEACON   = 0x25,
-	NWK_RX_STATE_LLBEACON = 0x26,
+	NWK_RX_STATE_RECEIVED 	= 0x20,
+	NWK_RX_STATE_DECRYPT  	= 0x21,
+	NWK_RX_STATE_INDICATE 	= 0x22,
+	NWK_RX_STATE_ROUTE    	= 0x23,
+	NWK_RX_STATE_FINISH   	= 0x24,
+	NWK_RX_STATE_BEACON   	= 0x25,
+	NWK_RX_STATE_LLBEACON 	= 0x26,
+	NWK_RX_STATE_LLCOMMAND 	= 0x27,
 };
 
 typedef struct NwkDuplicateRejectionEntry_t {
@@ -131,6 +132,13 @@ void __attribute__((weak)) PHY_DataInd(PHY_DataInd_t *ind)
 			return;
 		}
 	}
+	else if(0xcc == ind->data[0])
+	{
+		if(ind->size < sizeof(NwkFrameGeneralHeaderLLDN_t))
+		{
+			return;
+		}
+	}
 	else if(0x88 == ind->data[1])
 	{
 		if((0x61 != ind->data[0] && 0x41 != ind->data[0]) || ind->size < sizeof(NwkFrameHeader_t))
@@ -150,13 +158,32 @@ void __attribute__((weak)) PHY_DataInd(PHY_DataInd_t *ind)
 		return;
 	}
 
-	if (NULL == (frame = nwkFrameAlloc())) {
-		return;
+	if(ind->data[1] == 0x88 || ind->data[1] == 0x80)
+	{
+		if (NULL == (frame = nwkFrameAlloc())) {
+			return;
+		}
+	}
+	else if(ind->data[0] == 0x0c)
+	{
+		if (NULL == (frame = nwkFrameAlloc_LLDN(NWK_OPT_LLDN_BEACON))){
+			return;
+		}
+	}
+	else
+	{
+		if (NULL == (frame = nwkFrameAlloc_LLDN(NWK_OPT_LLDN_DATA))){
+			return;
+		}
 	}
 
 	if(0x0c == ind->data[0])
 	{
 		frame->state = NWK_RX_STATE_LLBEACON;
+	}
+	else if(0xcc == ind->data[0])
+	{
+		frame->state = NWK_RX_STATE_LLCOMMAND;
 	}
 	else
 	{
@@ -534,7 +561,7 @@ static bool nwkRxIndicateLLBeaconFrame(NwkFrame_t *frame)
 
 	frame->state = NWK_RX_STATE_FINISH;
 
-	if (NULL == nwkIb.endpoint[3]) {
+	if (NULL == nwkIb.endpoint[1]) {
 	return false;
 	}
 
@@ -543,15 +570,38 @@ static bool nwkRxIndicateLLBeaconFrame(NwkFrame_t *frame)
 	ind.srcEndpoint = 0;
 	ind.dstEndpoint = 0;
 	ind.data = &frame->LLbeacon;
-	// ind.size = nwkFramePayloadSize(frame);
+	ind.size = nwkFramePayloadSize(frame);
 	ind.lqi = frame->rx.lqi;
 	ind.rssi = frame->rx.rssi;
 
 	ind.options	= NWK_IND_OPT_LLDN_BEACON;
 
 
-	return nwkIb.endpoint[3](&ind);
+	return nwkIb.endpoint[1](&ind);
 }
+
+static bool nwkRxIndicateLLCommandFrame(NwkFrame_t *frame)
+{
+	NwkFrameGeneralHeaderLLDN_t *header = &frame->LLgeneral;
+	NWK_DataInd_t ind;
+
+	frame->state = NWK_RX_STATE_FINISH;
+
+	if (NULL == nwkIb.endpoint[2]) {
+	return false;
+	}
+
+	ind.data = &frame->LLgeneral;
+	ind.size = nwkFramePayloadSize(frame);
+	ind.lqi = frame->rx.lqi;
+	ind.rssi = frame->rx.rssi;
+
+	ind.options	= NWK_IND_OPT_LLDN_MACCOMMAND;
+
+	return nwkIb.endpoint[2](&ind);
+}
+
+
 
 /*************************************************************************//**
 *****************************************************************************/
@@ -641,6 +691,12 @@ void nwkRxTaskHandler(void)
 			nwkRxIndicateLLBeaconFrame(frame);
 		}
 		break;
+		case NWK_RX_STATE_LLCOMMAND:
+		{
+			nwkRxIndicateLLCommandFrame(frame);
+		}
+		break;
+
 		}
 	}
 }

@@ -36,9 +36,10 @@ typedef enum AppState_t
 static AppState_t appstate = APP_STATE_INITIAL;
 static NWK_DataReq_t msgReq;
 static SYS_Timer_t tmrSendData;
-
+static SYS_Timer_t tmrSeeStatus;
 // static AppMessageFrame_t  msgFrame;
-static char message = 'A'; 
+static char message = 'A';
+static ConfigRequest msgFrame; 
 /* Functions Declaration */
 
 static void appDataConf(NWK_DataReq_t *req)
@@ -54,33 +55,52 @@ static void tmrSendDataHandler(SYS_Timer_t *timer)
 //  Serial.write(message);
 }
 
+static void tmrSeeStatusHandler(SYS_Timer_t *timer)
+{
+//  NWK_DataReq(&msgReq);
+  Serial.write(msgReq.status);
+//  Serial.write(message);
+}
+
 static void appInit(void)
 {
   Serial.begin(115200);
   
 //  // Set Network Parameters
+  PHY_SetPromiscuousMode(true);
   NWK_SetAddr(APP_PANID);        // Endereco desse nodo visto pela Rede
   NWK_SetPanId(APP_PANID);       // Endereco do coordenador visto pela rede 
-  PHY_SetPromiscuousMode(true);
 
   PHY_SetChannel(0x1a); 
   PHY_SetRxState(true);
+  msgFrame.identifier = LL_CONFIGURATION_REQUEST;
+  msgFrame.s_macAddr = 0x02;
+  msgFrame.tx_channel = 0x1a;
+  msgFrame.assTimeSlot = 0x03;
+  msgFrame.macAddr = APP_PANID;
+  msgFrame.conf.tsDuration = 0b1111111;
+  msgFrame.conf.mgmtFrames = 0b1;
   
   // Set Up Data Message Frame
 //  msgReq.dstAddr      = APP_ADDR;
 //  msgReq.dstEndpoint  = APP_DATA_ENDPOINT;
 //  msgReq.srcEndpoint  = APP_DATA_ENDPOINT;
-  msgReq.options      = NWK_OPT_LLDN_BEACON | NWK_OPT_LLDN_BEACON_DISCOVERY; 
-//  msgReq.data         = (uint8_t)&message;
-//  msgReq.size         = sizeof(message);
+  msgReq.options      =  NWK_OPT_LLDN_BEACON | NWK_OPT_LLDN_BEACON_DISCOVERY | NWK_OPT_LLDN_BEACON_SECOND; 
+  msgReq.data         = (uint8_t)&msgFrame;
+  msgReq.size         = sizeof(msgFrame);
 //   msgReq.confirm      = appDataConf; // function called after ACK CONFIRM
 
 
   // Set up Timer
-  tmrSendData.interval = 5000;
+  tmrSendData.interval = 2500;
   tmrSendData.mode = SYS_TIMER_PERIODIC_MODE;
   tmrSendData.handler = tmrSendDataHandler;
-  SYS_TimerStart(&tmrSendData);      
+  SYS_TimerStart(&tmrSendData);
+
+  tmrSeeStatus.interval = 6000;
+  tmrSeeStatus.mode = SYS_TIMER_PERIODIC_MODE;
+  tmrSeeStatus.handler = tmrSeeStatusHandler;
+//  SYS_TimerStart(&tmrSeeStatus);
 }
 
 bool rx_frame(NWK_DataInd_t *ind)

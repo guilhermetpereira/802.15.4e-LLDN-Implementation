@@ -131,14 +131,25 @@ static void nwkDataReqSendFrame(NWK_DataReq_t *req)
 	{
 		frame->tx.control = 0;
 
-		if (req->options & NWK_OPT_LLDN_BEACON_DISCOVERY) frame->LLbeacon.Flags.txState = 0b100;
+		if (req->options & NWK_OPT_LLDN_BEACON_ONLINE)
+			frame->LLbeacon.Flags.txState = 0b000;
+		else if (req->options & NWK_OPT_LLDN_BEACON_DISCOVERY)
+			frame->LLbeacon.Flags.txState = 0b100;
+		else if (req->options & NWK_OPT_LLDN_BEACON_CONFIG)
+			frame->LLbeacon.Flags.txState = 0b110;
+		else if (req->options & NWK_OPT_LLDN_BEACON_RESET)
+			frame->LLbeacon.Flags.txState = 0b111;
+
 		frame->LLbeacon.Flags.txDir 		= 0b0;
 		frame->LLbeacon.Flags.reserved 	= 0b0;
 		frame->LLbeacon.Flags.numMgmtTimeslots = NWK_NUMBER_OF_MGMT_TIMESLOTS;
 
 		frame->LLbeacon.confSeqNumber = 0x00;
-		if (req->options & 	NWK_OPT_LLDN_BEACON_SECOND) frame->LLbeacon.confSeqNumber = 0x01;
-		if (req->options & 	NWK_OPT_LLDN_BEACON_THIRD) 	frame->LLbeacon.confSeqNumber = 0x02;
+		if (req->options & 	NWK_OPT_LLDN_BEACON_SECOND)
+		 frame->LLbeacon.confSeqNumber = 0x01;
+		else if (req->options & 	NWK_OPT_LLDN_BEACON_THIRD)
+			frame->LLbeacon.confSeqNumber = 0x02;
+
 		frame->LLbeacon.TimeSlotSize 	= 0xff; // calculation needs to be implemented, see timers first
 
 		uint8_t* shortAddr = (uint8_t* )nwkIb.addr;
@@ -148,9 +159,10 @@ static void nwkDataReqSendFrame(NWK_DataReq_t *req)
 	}
 	else if(req->options & NWK_OPT_MAC_COMMAND)
 	{
+		frame->tx.control = 0;
 		memcpy(frame->payload, req->data, req->size);
 		frame->size += req->size;
-		void nwkTxMacCommandFrameLLDN(NwkFrame_t *frame);
+		nwkTxMacCommandFrameLLDN(frame);
 	}
 	else if(req->options & NWK_OPT_BEACON )
 	{

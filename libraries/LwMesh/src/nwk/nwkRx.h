@@ -69,6 +69,7 @@ enum {
 	NWK_IND_OPT_MULTICAST         = 1 << 6,
 	NWK_IND_OPT_BEACON			  		= 1 << 7,
 	NWK_IND_OPT_LLDN_BEACON				= 1 << 8,
+	NWK_IND_OPT_LLDN_MACCOMMAND   = 1 << 9,
 };
 
 typedef struct NWK_DataInd_t {

@@ -103,7 +103,7 @@ NwkFrame_t *nwkFrameAlloc_LLDN(uint16_t subtype)
 			{
 				nwkFrameFrames[i].size = sizeof(NwkFrameBeaconHeaderLLDN_t);
 			}
-			else if(subtype & NWK_OPT_LLDN_DATA || subtype & NWK_OPT_MAC_COMMAND)
+			else if((subtype & NWK_OPT_LLDN_DATA) || (subtype & NWK_OPT_MAC_COMMAND))
 			{
 				nwkFrameFrames[i].size = sizeof(NwkFrameGeneralHeaderLLDN_t);
 			}
