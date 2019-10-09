@@ -109,18 +109,20 @@ void NWK_DataReq(NWK_DataReq_t *req)
 *****************************************************************************/
 static void nwkDataReqSendFrame(NWK_DataReq_t *req)
 {
-	NwkFrame_t *frame;
-	if(req->options < NWK_OPT_LLDN_BEACON )
-	{
-		if(NULL == (frame = nwkFrameAlloc()))
+	NwkFrame_t *frame;/
+	if(req->options < NWK_OPT_LLDN_BEACON ) // use original frame allocation
+	{																			 	// this is not optimezed for
+		if(NULL == (frame = nwkFrameAlloc()))	// NWK_OPT_BEACON
 		{
 			req->state = NWK_DATA_REQ_STATE_CONFIRM;
 			req->status = NWK_OUT_OF_MEMORY_STATUS;
 			return;
 		}
-	}	else {
+	}	else {		// use LLDN allocation, alocatted depending on header size
 		if( NULL == (frame = nwkFrameAlloc_LLDN(req->options)))
 		{
+			// if there isn't space avaible in frame buffer queue, requested mesage
+			// can't be process
 			req->state = NWK_DATA_REQ_STATE_CONFIRM;
 			req->status = NWK_OUT_OF_MEMORY_STATUS;
 			return;
@@ -130,18 +132,20 @@ static void nwkDataReqSendFrame(NWK_DataReq_t *req)
 	if(req->options & NWK_OPT_LLDN_BEACON)
 	{
 		frame->tx.control = 0;
-
+		// Set Flag depending on current state of coordinator
 		if (req->options & NWK_OPT_LLDN_BEACON_ONLINE)
-			frame->LLbeacon.Flags.txState = 0b000;
+			frame->LLbeacon.Flags.txState = 0b000; // online mode
 		else if (req->options & NWK_OPT_LLDN_BEACON_DISCOVERY)
-			frame->LLbeacon.Flags.txState = 0b100;
+			frame->LLbeacon.Flags.txState = 0b100; // discovery mode
 		else if (req->options & NWK_OPT_LLDN_BEACON_CONFIG)
-			frame->LLbeacon.Flags.txState = 0b110;
+			frame->LLbeacon.Flags.txState = 0b110; // configuration mode
 		else if (req->options & NWK_OPT_LLDN_BEACON_RESET)
-			frame->LLbeacon.Flags.txState = 0b111;
+			frame->LLbeacon.Flags.txState = 0b111; // full reset mode
 
+		// set biderectional time slots 0 - downlink 1 - uplink
 		frame->LLbeacon.Flags.txDir 		= 0b0;
 		frame->LLbeacon.Flags.reserved 	= 0b0;
+		// set size of management time slots based on timeslots size of uplink
 		frame->LLbeacon.Flags.numMgmtTimeslots = NWK_NUMBER_OF_MGMT_TIMESLOTS;
 
 		frame->LLbeacon.confSeqNumber = 0x00;
@@ -154,8 +158,8 @@ static void nwkDataReqSendFrame(NWK_DataReq_t *req)
 
 		uint8_t* shortAddr = (uint8_t* )nwkIb.addr;
 		frame->LLbeacon.PanId = shortAddr[0];
-
-		nwkTxBeaconFrameLLDN(frame);
+		// set Frame Control, Security Header and Sequence Nuber fields
+		nwkTxBeaconFrameLLDN(frame); 
 	}
 	else if(req->options & NWK_OPT_MAC_COMMAND)
 	{

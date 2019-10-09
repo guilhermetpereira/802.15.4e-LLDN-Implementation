@@ -91,16 +91,18 @@ typedef struct NWK_DataReq_t {
 	uint8_t control;
 } NWK_DataReq_t;
 
-typedef struct DiscoveryResponse {
+// payload structure for Discovery Response Frame
+typedef struct NWK_DiscoveryResponse_t {
 	uint8_t identifier;
 	uint16_t macAddr;
 	struct{
 		uint8_t tsDuration	 : 7;
 		uint8_t dirIndicator : 1;
 	}ts_dir;
-} DiscoveryResponse;
+} NWK_DiscoveryResponse_t;
 
-typedef struct ConfigStatus {
+// payload structure for Configuration Status Frame
+typedef struct NWK_ConfigStatus_t {
 	uint8_t identifier;
 	uint8_t s_macAddr;
 	uint8_t assTimeSlot;
@@ -109,9 +111,10 @@ typedef struct ConfigStatus {
 		uint8_t tsDuration 		: 7;
 		uint8_t dirIndicator 	: 1;
 	}ts_dir;
-} ConfigStatus;
+} NWK_ConfigStatus_t;
 
-typedef struct ConfigRequest {
+// payload structure for Configuration Request Frame
+typedef struct NWK_ConfigRequest_t {
 	uint8_t identifier;
 	uint8_t s_macAddr;
 	uint8_t tx_channel;
@@ -121,7 +124,7 @@ typedef struct ConfigRequest {
 		uint8_t tsDuration	: 7;
 		uint8_t mgmtFrames 	: 1;
 	} conf;
-} ConfigRequest;
+} NWK_ConfigRequest_t;
 
 
 /*- Prototypes -------------------------------------------------------------*/

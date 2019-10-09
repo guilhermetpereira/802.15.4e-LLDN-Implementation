@@ -125,6 +125,7 @@ void __attribute__((weak)) PHY_DataInd(PHY_DataInd_t *ind)
 {
 	NwkFrame_t *frame;
 
+	// check frame control for a LL-Beacon frame
 	if(0x0c == ind->data[0])
 	{
 		if(ind->size < sizeof(NwkFrameBeaconHeaderLLDN_t))
@@ -132,6 +133,7 @@ void __attribute__((weak)) PHY_DataInd(PHY_DataInd_t *ind)
 			return;
 		}
 	}
+	// check frame control for a LL-MAC Command frame
 	else if(0xcc == ind->data[0])
 	{
 		if(ind->size < sizeof(NwkFrameGeneralHeaderLLDN_t))
@@ -163,15 +165,23 @@ void __attribute__((weak)) PHY_DataInd(PHY_DataInd_t *ind)
 		if (NULL == (frame = nwkFrameAlloc())) {
 			return;
 		}
+		// if frame received is NwkFrameHeader change state to Receveid
+		// if frame receveid is a 802.15.4 beacon change state to Beacon
+		frame->state = ((0x88 == ind->data[1]) ? NWK_RX_STATE_RECEIVED : NWK_RX_STATE_BEACON);
 	}
+	// allocate frame buffer according to received frame
 	else if(ind->data[0] == 0x0c)
 	{
+		// allocates a LL-Beacon frame
 		if (NULL == (frame = nwkFrameAlloc_LLDN(NWK_OPT_LLDN_BEACON))){
 			return;
 		}
+		// if frame receveid is LL-Beacon change state to LLBEACON
+		frame->state = NWK_RX_STATE_LLBEACON;
 	}
 	else
 	{
+		// allocates a LL-MAC command or LL-Data frame
 		if (NULL == (frame = nwkFrameAlloc_LLDN(NWK_OPT_LLDN_DATA))){
 			return;
 		}
@@ -179,7 +189,6 @@ void __attribute__((weak)) PHY_DataInd(PHY_DataInd_t *ind)
 
 	if(0x0c == ind->data[0])
 	{
-		frame->state = NWK_RX_STATE_LLBEACON;
 	}
 	else if(0xcc == ind->data[0])
 	{
@@ -187,7 +196,6 @@ void __attribute__((weak)) PHY_DataInd(PHY_DataInd_t *ind)
 	}
 	else
 	{
-		frame->state = ((0x88 == ind->data[1]) ? NWK_RX_STATE_RECEIVED : NWK_RX_STATE_BEACON);
 	}
 	frame->size = ind->size;
 	frame->rx.lqi = ind->lqi;
@@ -556,7 +564,7 @@ static bool nwkRxIndicateBeaconFrame(NwkFrame_t *frame)
 *****************************************************************************/
 static bool nwkRxIndicateLLBeaconFrame(NwkFrame_t *frame)
 {
-	NwkFrameBeaconHeaderLLDN_t *header = &frame->LLbeacon;
+	// NwkFrameBeaconHeaderLLDN_t *header = &frame->LLbeacon;
 	NWK_DataInd_t ind;
 
 	frame->state = NWK_RX_STATE_FINISH;
@@ -565,12 +573,8 @@ static bool nwkRxIndicateLLBeaconFrame(NwkFrame_t *frame)
 	return false;
 	}
 
-	// ind.srcAddr = frame->beacon.macSrcAddr;
-	// ind.dstAddr = frame->beacon.macSrcAddr;
-	ind.srcEndpoint = 0;
-	ind.dstEndpoint = 0;
 	ind.data = &frame->LLbeacon;
-	ind.size = nwkFramePayloadSize(frame);
+	// ind.size = nwkFramePayloadSize(frame);
 	ind.lqi = frame->rx.lqi;
 	ind.rssi = frame->rx.rssi;
 

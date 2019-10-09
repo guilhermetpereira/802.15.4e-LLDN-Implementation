@@ -130,10 +130,10 @@ void nwkTxBeaconFrameLLDN(NwkFrame_t *frame)
 	frame->tx.timeout = 0;
 
 	// beacon->macFcf.FrameType				= 0b100; 	// LLDN type
-	// beacon->macFcf.SecurityEnabled 	= 0b1;
-	// beacon->macFcf.FrameVersion			= 0b0;   	// zero to indicate compatible with IEEE Std 802.15.4.
-	// beacon->macFcf.ackRequest				= 0b0;
-	// beacon->macFcf.SubFrameType			= 0b00; 	// Subtype = LL-Beacon
+	// beacon->macFcf.SecurityEnabled 	= 0b1;	// 1 to enable security header and sequence number
+	// beacon->macFcf.FrameVersion			= 0b0;	// zero to indicate compatible with IEEE Std 802.15.4.
+	// beacon->macFcf.ackRequest				= 0b0;	// zero to indicade no ACK
+	// beacon->macFcf.SubFrameType			= 0b00; // Subtype = LL-Beacon
 	beacon->macFcf = 0x0c;
 	beacon->macSeqNumber = ++nwkIb.macSeqNum;
 
@@ -151,6 +151,11 @@ void nwkTxMacCommandFrameLLDN(NwkFrame_t *frame)
 	frame->tx.status = NWK_SUCCESS_STATUS;
 	frame->tx.timeout = 0;
 
+	// beacon->macFcf.FrameType					= 0b100; // LLDN type
+	// beacon->macFcf.SecurityEnabled 	= 0b1;	// 1 to enable security header and sequence number
+	// beacon->macFcf.FrameVersion			= 0b0;	// zero to indicate compatible with IEEE Std 802.15.4.
+	// beacon->macFcf.ackRequest				= 0b0;	// zero to indicade no ACK
+	// beacon->macFcf.SubFrameType			= 0b11; // Subtype = LL-MAC command
 	mac_command->macFcf = 0xcc;
 	mac_command->macSeqNumber = ++nwkIb.macSeqNum;
 
