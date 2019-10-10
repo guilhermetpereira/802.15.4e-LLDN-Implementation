@@ -94,20 +94,20 @@ NwkFrame_t *nwkFrameAlloc(void)
 	return NULL;
 }
 
-NwkFrame_t *nwkFrameAlloc_LLDN(uint16_t subtype)
+NwkFrame_t *nwkFrameAlloc_LLDN(bool beacon_frame)
 {
 	for (uint8_t i = 0; i < NWK_BUFFERS_AMOUNT; i++) {
 		if (NWK_FRAME_STATE_FREE == nwkFrameFrames[i].state) {
 			// clear memory of previous frame
 			memset(&nwkFrameFrames[i], 0, sizeof(NwkFrame_t));
 			// store in size initial size of frame, only it's MHR structure
-			if(subtype & NWK_OPT_LLDN_BEACON)
+			if(beacon_frame)
 			{
 				nwkFrameFrames[i].size = sizeof(NwkFrameBeaconHeaderLLDN_t);
 			}
-			else if((subtype & NWK_OPT_LLDN_DATA) || (subtype & NWK_OPT_MAC_COMMAND))
+			else
 			{
-				// data and mac command share the same MHR structure
+				// data, mac command and group ack share the same MHR structure
 				nwkFrameFrames[i].size = sizeof(NwkFrameGeneralHeaderLLDN_t);
 			}
 			// offset payload to end of MHR structure
