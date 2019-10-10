@@ -39,7 +39,7 @@ static SYS_Timer_t tmrSendData;
 static SYS_Timer_t tmrSeeStatus;
 // static AppMessageFrame_t  msgFrame;
 static char message = 'A';
-static ConfigRequest msgFrame; 
+static NWK_ConfigRequest_t msgFrame; 
 /* Functions Declaration */
 
 static void appDataConf(NWK_DataReq_t *req)
@@ -68,6 +68,7 @@ static void appInit(void)
   
 //  // Set Network Parameters
   PHY_SetPromiscuousMode(true);
+  PHY_SetTdmaMode(true);
   NWK_SetAddr(APP_PANID);        // Endereco desse nodo visto pela Rede
   NWK_SetPanId(APP_PANID);       // Endereco do coordenador visto pela rede 
 
@@ -85,8 +86,8 @@ static void appInit(void)
 //  msgReq.dstAddr      = APP_ADDR;
 //  msgReq.dstEndpoint  = APP_DATA_ENDPOINT;
 //  msgReq.srcEndpoint  = APP_DATA_ENDPOINT;
-  msgReq.options      =  NWK_OPT_LLDN_BEACON | NWK_OPT_LLDN_BEACON_DISCOVERY | NWK_OPT_LLDN_BEACON_SECOND; 
-  msgReq.data         = (uint8_t)&msgFrame;
+  msgReq.options      =  NWK_OPT_MAC_COMMAND;//NWK_OPT_LLDN_BEACON | NWK_OPT_LLDN_BEACON_DISCOVERY | NWK_OPT_LLDN_BEACON_SECOND; 
+  msgReq.data         = (uint8_t *)&msgFrame;
   msgReq.size         = sizeof(msgFrame);
 //   msgReq.confirm      = appDataConf; // function called after ACK CONFIRM
 

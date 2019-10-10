@@ -52,10 +52,10 @@ bool rx_frame(NWK_DataInd_t *ind)
 bool maccommand_received(NWK_DataInd_t *ind)
 {
   Serial.write("\nFrame Receiveid: ");
-  Serial.print(ind->data[0], HEX);
+  Serial.print(ind->data[1], HEX);
   if(ind->data[2] == LL_CONFIGURATION_REQUEST)
   {
-    ConfigRequest *d= (ConfigRequest *)ind->data;
+    NWK_ConfigStatus_t *d= (NWK_ConfigStatus_t *)ind->data;
     Serial.print(d->identifier);
   }
 }

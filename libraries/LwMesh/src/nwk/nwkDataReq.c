@@ -109,7 +109,7 @@ void NWK_DataReq(NWK_DataReq_t *req)
 *****************************************************************************/
 static void nwkDataReqSendFrame(NWK_DataReq_t *req)
 {
-	NwkFrame_t *frame;/
+	NwkFrame_t *frame;
 	if(req->options < NWK_OPT_LLDN_BEACON ) // use original frame allocation
 	{																			 	// this is not optimezed for
 		if(NULL == (frame = nwkFrameAlloc()))	// NWK_OPT_BEACON
@@ -119,9 +119,9 @@ static void nwkDataReqSendFrame(NWK_DataReq_t *req)
 			return;
 		}
 	}	else {		// use LLDN allocation, alocatted depending on header size
-		if( NULL == (frame = nwkFrameAlloc_LLDN(req->options)))
+		if( NULL == (frame = ((req->options & NWK_OPT_LLDN_BEACON) ? nwkFrameAlloc_LLDN(true) : nwkFrameAlloc_LLDN(false))))
 		{
-			// if there isn't space avaible in frame buffer queue, requested mesage
+			// if there isn't space avaible in frame buffer queue, requested message
 			// can't be process
 			req->state = NWK_DATA_REQ_STATE_CONFIRM;
 			req->status = NWK_OUT_OF_MEMORY_STATUS;
@@ -159,14 +159,16 @@ static void nwkDataReqSendFrame(NWK_DataReq_t *req)
 		uint8_t* shortAddr = (uint8_t* )nwkIb.addr;
 		frame->LLbeacon.PanId = shortAddr[0];
 		// set Frame Control, Security Header and Sequence Nuber fields
-		nwkTxBeaconFrameLLDN(frame); 
+		nwkTxBeaconFrameLLDN(frame);
 	}
-	else if(req->options & NWK_OPT_MAC_COMMAND)
+	else if(req->options & NWK_OPT_MAC_COMMAND ||
+					req->options & NWK_OPT_LLDN_DATA ||
+					req->options & NWK_OPT_LLDN_ACK )
 	{
 		frame->tx.control = 0;
 		memcpy(frame->payload, req->data, req->size);
 		frame->size += req->size;
-		nwkTxMacCommandFrameLLDN(frame);
+		nwkTxMacCommandFrameLLDN(frame, req->options);
 	}
 	else if(req->options & NWK_OPT_BEACON )
 	{

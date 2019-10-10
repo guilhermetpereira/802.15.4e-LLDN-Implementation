@@ -595,7 +595,7 @@ static bool nwkRxIndicateLLCommandFrame(NwkFrame_t *frame)
 	return false;
 	}
 
-	ind.data = &frame->LLgeneral;
+	ind.data = &frame->payload;
 	ind.size = nwkFramePayloadSize(frame);
 	ind.lqi = frame->rx.lqi;
 	ind.rssi = frame->rx.rssi;

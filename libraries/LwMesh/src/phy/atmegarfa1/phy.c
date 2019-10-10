@@ -110,7 +110,7 @@ void PHY_SetTdmaMode(bool mode)
 	if(mode)
 	{
 		XAH_CTRL_0_REG_s.maxFrameRetries = 0;
-		XAH_CTRL_0_REG_s.maxCsmaRetries = 7;
+		XAH_CTRL_0_REG_s.maxCsmaRetries = 7; // disable csma
 
 		CSMA_SEED_1_REG_s.aackDisAck = 1;	// Disable ACK even if requested
 	}

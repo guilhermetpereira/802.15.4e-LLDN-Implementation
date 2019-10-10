@@ -105,6 +105,7 @@ typedef struct  NwkFrameBeaconHeader_t {
 } NwkFrameBeaconHeader_t;
 
 typedef struct  NwkFrameBeaconHeaderLLDN_t {
+	/******* MHR *****/
 	// struct
 	// {
 	// 	uint8_t FrameType 				: 3;
@@ -123,13 +124,14 @@ typedef struct  NwkFrameBeaconHeaderLLDN_t {
 		uint8_t countSize	: 1;
 		uint8_t reserved 	: 1;
 	} macSecHeader;
-
+	/****** MAC Payload *******/
 	struct
 	{
 		uint8_t txState 				: 3;
 		uint8_t txDir 					: 1;
 		uint8_t reserved				: 1;
-		uint8_t numMgmtTimeslots: 3;
+		uint8_t numMgmtTimeslots: 3; // number of managment time slots
+																 // uplink and downlink must be equal
  } Flags;
 
 	uint8_t PanId;
@@ -192,7 +194,7 @@ COMPILER_PACK_RESET()
 /*- Prototypes -------------------------------------------------------------*/
 void nwkFrameInit(void);
 NwkFrame_t *nwkFrameAlloc(void);
-NwkFrame_t *nwkFrameAlloc_LLDN(uint16_t subtype);
+NwkFrame_t *nwkFrameAlloc_LLDN(bool beacon_frame);
 void nwkFrameFree(NwkFrame_t *frame);
 NwkFrame_t *nwkFrameNext(NwkFrame_t *frame);
 void nwkFrameCommandInit(NwkFrame_t *frame);
