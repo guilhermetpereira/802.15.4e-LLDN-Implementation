@@ -126,6 +126,12 @@ typedef struct NWK_ConfigRequest_t {
 	} conf;
 } NWK_ConfigRequest_t;
 
+typedef struct NWK_ACKFormat_t{
+	uint8_t sourceId;
+	// 127: maximum size avaible on buffer
+	// 4: size of NwkFrameGeneralHeaderLLDN_t
+	uint8_t ackFlags[127 - 4];
+};
 
 /*- Prototypes -------------------------------------------------------------*/
 void NWK_DataReq(NWK_DataReq_t *req);

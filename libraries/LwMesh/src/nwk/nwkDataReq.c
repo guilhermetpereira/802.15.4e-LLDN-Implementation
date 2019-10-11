@@ -118,7 +118,7 @@ static void nwkDataReqSendFrame(NWK_DataReq_t *req)
 			req->status = NWK_OUT_OF_MEMORY_STATUS;
 			return;
 		}
-	}	else {		// use LLDN allocation, alocatted depending on header size
+	}	else {		// use LLDN allocation, alocattes depending on header size
 		if( NULL == (frame = ((req->options & NWK_OPT_LLDN_BEACON) ? nwkFrameAlloc_LLDN(true) : nwkFrameAlloc_LLDN(false))))
 		{
 			// if there isn't space avaible in frame buffer queue, requested message
@@ -142,17 +142,17 @@ static void nwkDataReqSendFrame(NWK_DataReq_t *req)
 		else if (req->options & NWK_OPT_LLDN_BEACON_RESET)
 			frame->LLbeacon.Flags.txState = 0b111; // full reset mode
 
-		// set biderectional time slots 0 - downlink 1 - uplink
+		// set biderectional time slots: 0 - downlink 1 - uplink
 		frame->LLbeacon.Flags.txDir 		= 0b0;
 		frame->LLbeacon.Flags.reserved 	= 0b0;
-		// set size of management time slots based on timeslots size of uplink
+		// set number of managment timeslots
 		frame->LLbeacon.Flags.numMgmtTimeslots = NWK_NUMBER_OF_MGMT_TIMESLOTS;
 
-		frame->LLbeacon.confSeqNumber = 0x00;
 		if (req->options & 	NWK_OPT_LLDN_BEACON_SECOND)
 		 frame->LLbeacon.confSeqNumber = 0x01;
 		else if (req->options & 	NWK_OPT_LLDN_BEACON_THIRD)
 			frame->LLbeacon.confSeqNumber = 0x02;
+		else frame->LLbeacon.confSeqNumber = 0x00;
 
 		frame->LLbeacon.TimeSlotSize 	= 0xff; // calculation needs to be implemented, see timers first
 
@@ -162,7 +162,7 @@ static void nwkDataReqSendFrame(NWK_DataReq_t *req)
 		nwkTxBeaconFrameLLDN(frame);
 	}
 	else if(req->options & NWK_OPT_MAC_COMMAND ||
-					req->options & NWK_OPT_LLDN_DATA ||
+					req->options & NWK_OPT_LLDN_DATA 	||
 					req->options & NWK_OPT_LLDN_ACK )
 	{
 		frame->tx.control = 0;

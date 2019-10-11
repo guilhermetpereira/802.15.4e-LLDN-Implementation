@@ -134,7 +134,7 @@ void __attribute__((weak)) PHY_DataInd(PHY_DataInd_t *ind)
 		}
 	}
 	// check frame control for a LL-MAC Command frame
-	else if(0xcc == ind->data[0])
+	else if(0xcc == ind->data[0] || )
 	{
 		if(ind->size < sizeof(NwkFrameGeneralHeaderLLDN_t))
 		{
@@ -173,7 +173,7 @@ void __attribute__((weak)) PHY_DataInd(PHY_DataInd_t *ind)
 	else if(ind->data[0] == 0x0c)
 	{
 		// allocates a LL-Beacon frame
-		if (NULL == (frame = nwkFrameAlloc_LLDN(NWK_OPT_LLDN_BEACON))){
+		if (NULL == (frame = nwkFrameAlloc_LLDN(true))){
 			return;
 		}
 		// if frame receveid is LL-Beacon change state to LLBEACON
@@ -182,21 +182,12 @@ void __attribute__((weak)) PHY_DataInd(PHY_DataInd_t *ind)
 	else
 	{
 		// allocates a LL-MAC command or LL-Data frame
-		if (NULL == (frame = nwkFrameAlloc_LLDN(NWK_OPT_LLDN_DATA))){
+		if (NULL == (frame = nwkFrameAlloc_LLDN(false))){
 			return;
 		}
-	}
-
-	if(0x0c == ind->data[0])
-	{
-	}
-	else if(0xcc == ind->data[0])
-	{
 		frame->state = NWK_RX_STATE_LLCOMMAND;
 	}
-	else
-	{
-	}
+
 	frame->size = ind->size;
 	frame->rx.lqi = ind->lqi;
 	frame->rx.rssi = ind->rssi;
